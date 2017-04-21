@@ -45,34 +45,34 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root' => storage_path('app'),
+            'root'   => storage_path('app'),
         ],
 
         'public' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => env('APP_URL') . '/storage',
+            'driver'     => 'local',
+            'root'       => storage_path('app/public'),
+            'url'        => env('APP_URL').'/storage',
             'visibility' => 'public',
         ],
 
         's3' => [
             'driver' => 's3',
-            'key' => env('AWS_KEY'),
+            'key'    => env('AWS_KEY'),
             'secret' => env('AWS_SECRET'),
             'region' => env('AWS_REGION'),
             'bucket' => env('AWS_BUCKET'),
         ],
 
         'cosv4' => [
-            'driver' => 'cosv4',
-            'protocol' => env('COSV4_PROTOCOL', 'http'),
-            'domain' => env('COSV4_DOMAIN'),
-            'app_id' => env('COSV4_APP_ID'),
-            'secret_id' => env('COSV4_SECRET_ID'),
+            'driver'     => 'cosv4',
+            'protocol'   => env('COSV4_PROTOCOL', 'http'),
+            'domain'     => env('COSV4_DOMAIN'),
+            'app_id'     => env('COSV4_APP_ID'),
+            'secret_id'  => env('COSV4_SECRET_ID'),
             'secret_key' => env('COSV4_SECRET_KEY'),
-            'timeout' => env('COSV4_TIMEOUT', 60),
-            'bucket' => env('COSV4_BUCKET'),
-            'region' => env('COSV4_REGION', 'gz'),
+            'timeout'    => env('COSV4_TIMEOUT', 60),
+            'bucket'     => env('COSV4_BUCKET'),
+            'region'     => env('COSV4_REGION', 'gz'),
         ],
 
     ],

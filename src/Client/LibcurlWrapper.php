@@ -12,9 +12,9 @@ class LibcurlWrapper
 
     public function __construct()
     {
-        $this->sequence        = 0;
+        $this->sequence = 0;
         $this->curlMultiHandle = curl_multi_init();
-        $this->idleCurlHandle  = array();
+        $this->idleCurlHandle = [];
     }
 
     public function __destruct()
@@ -23,7 +23,7 @@ class LibcurlWrapper
         foreach ($this->idleCurlHandle as $handle) {
             curl_close($handle);
         }
-        $this->idleCurlHandle = array();
+        $this->idleCurlHandle = [];
     }
 
     public function startSendingRequest($httpRequest, $done)
@@ -44,7 +44,7 @@ class LibcurlWrapper
         curl_setopt($curlHandle, CURLOPT_HEADER, 1);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         $headers = $httpRequest->customHeaders;
-        array_push($headers, 'User-Agent:' . Conf::getUserAgent());
+        array_push($headers, 'User-Agent:'.Conf::getUserAgent());
         if ($httpRequest->method === 'POST') {
             if (defined('CURLOPT_SAFE_UPLOAD')) {
                 curl_setopt($curlHandle, CURLOPT_SAFE_UPLOAD, true);
@@ -53,16 +53,15 @@ class LibcurlWrapper
             curl_setopt($curlHandle, CURLOPT_POST, true);
             $arr = buildCustomPostFields($httpRequest->dataToPost);
             array_push($headers, 'Expect: 100-continue');
-            array_push($headers, 'Content-Type: multipart/form-data; boundary=' . $arr[0]);
+            array_push($headers, 'Content-Type: multipart/form-data; boundary='.$arr[0]);
             curl_setopt($curlHandle, CURLOPT_POSTFIELDS, $arr[1]);
         }
         curl_setopt($curlHandle, CURLOPT_HTTPHEADER, $headers);
 
         curl_multi_add_handle($this->curlMultiHandle, $curlHandle);
 
-
-        $this->curlHandleInfo[$this->sequence]['handle']  = $curlHandle;
-        $this->curlHandleInfo[$this->sequence]['done']    = $done;
+        $this->curlHandleInfo[$this->sequence]['handle'] = $curlHandle;
+        $this->curlHandleInfo[$this->sequence]['done'] = $done;
         $this->curlHandleInfo[$this->sequence]['request'] = $httpRequest;
     }
 
@@ -72,7 +71,7 @@ class LibcurlWrapper
             $active = null;
 
             do {
-                $mrc  = curl_multi_exec($this->curlMultiHandle, $active);
+                $mrc = curl_multi_exec($this->curlMultiHandle, $active);
                 $info = curl_multi_info_read($this->curlMultiHandle);
                 if ($info !== false) {
                     $this->processResult($info);
@@ -85,7 +84,7 @@ class LibcurlWrapper
                 }
 
                 do {
-                    $mrc  = curl_multi_exec($this->curlMultiHandle, $active);
+                    $mrc = curl_multi_exec($this->curlMultiHandle, $active);
                     $info = curl_multi_info_read($this->curlMultiHandle);
                     if ($info !== false) {
                         $this->processResult($info);
@@ -101,8 +100,8 @@ class LibcurlWrapper
 
     private function processResult($info)
     {
-        $result   = $info['result'];
-        $handle   = $info['handle'];
+        $result = $info['result'];
+        $handle = $info['handle'];
         $sequence = 0;
 
         foreach ($this->curlHandleInfo as $key => $info) {
@@ -112,25 +111,25 @@ class LibcurlWrapper
             }
         }
 
-        $request  = $this->curlHandleInfo[$sequence]['request'];
-        $done     = $this->curlHandleInfo[$sequence]['done'];
+        $request = $this->curlHandleInfo[$sequence]['request'];
+        $done = $this->curlHandleInfo[$sequence]['done'];
         $response = new HttpResponse();
 
         if ($result !== CURLE_OK) {
-            $response->curlErrorCode    = $result;
+            $response->curlErrorCode = $result;
             $response->curlErrorMessage = curl_error($handle);
 
             call_user_func($done, $request, $response);
         } else {
             $responseStr = curl_multi_getcontent($handle);
-            $headerSize  = curl_getinfo($handle, CURLINFO_HEADER_SIZE);
-            $headerStr   = substr($responseStr, 0, $headerSize);
-            $body        = substr($responseStr, $headerSize);
+            $headerSize = curl_getinfo($handle, CURLINFO_HEADER_SIZE);
+            $headerStr = substr($responseStr, 0, $headerSize);
+            $body = substr($responseStr, $headerSize);
 
-            $response->curlErrorCode    = curl_errno($handle);
+            $response->curlErrorCode = curl_errno($handle);
             $response->curlErrorMessage = curl_error($handle);
-            $response->statusCode       = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-            $headLines                  = explode("\r\n", $headerStr);
+            $response->statusCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+            $headLines = explode("\r\n", $headerStr);
             foreach ($headLines as $head) {
                 $arr = explode(':', $head);
                 if (count($arr) >= 2) {

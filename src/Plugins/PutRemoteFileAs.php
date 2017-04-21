@@ -32,7 +32,7 @@ class PutRemoteFileAs extends AbstractPlugin
             ->getBody()
             ->getContents();
 
-        $path = trim($path . '/' . $name, '/');
+        $path = trim($path.'/'.$name, '/');
 
         return $this->filesystem->put($path, $contents, $options) ? $path : false;
     }

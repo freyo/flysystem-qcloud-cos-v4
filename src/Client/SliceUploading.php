@@ -37,10 +37,10 @@ class SliceUploading
      */
     public function __construct($timeoutMs, $maxRetryCount)
     {
-        $this->timeoutMs            = $timeoutMs;
-        $this->maxRetryCount        = $maxRetryCount;
-        $this->errorCode            = ErrorCode::COSAPI_SUCCESS;
-        $this->errorMessage         = '';
+        $this->timeoutMs = $timeoutMs;
+        $this->maxRetryCount = $maxRetryCount;
+        $this->errorCode = ErrorCode::COSAPI_SUCCESS;
+        $this->errorMessage = '';
         $this->concurrentTaskNumber = self::DEFAULT_CONCURRENT_TASK_NUMBER;
 
         $this->offset = 0;
@@ -89,28 +89,28 @@ class SliceUploading
         $signature, $srcFpath, $url, $fileSize, $sliceSize, $bizAttr, $insertOnly)
     {
         $this->signature = $signature;
-        $this->srcFpath  = $srcFpath;
-        $this->url       = $url;
-        $this->fileSize  = $fileSize;
+        $this->srcFpath = $srcFpath;
+        $this->url = $url;
+        $this->fileSize = $fileSize;
         $this->sliceSize = $sliceSize;
 
         // Clear error so caller can successfully retry.
         $this->clearError();
 
-        $request = array(
-            'url' => $url,
-            'method' => 'post',
+        $request = [
+            'url'     => $url,
+            'method'  => 'post',
             'timeout' => $this->timeoutMs / 1000,
-            'data' => array(
-                'op' => 'upload_slice_init',
-                'filesize' => $fileSize,
+            'data'    => [
+                'op'         => 'upload_slice_init',
+                'filesize'   => $fileSize,
                 'slice_size' => $sliceSize,
                 'insertOnly' => $insertOnly,
-            ),
-            'header' => array(
-                'Authorization: ' . $signature,
-            ),
-        );
+            ],
+            'header' => [
+                'Authorization: '.$signature,
+            ],
+        ];
 
         if (isset($bizAttr) && strlen($bizAttr)) {
             $request['data']['biz_attr'] = $bizAttr;
@@ -145,29 +145,30 @@ class SliceUploading
 
             $sliceContent = file_get_contents($this->srcFpath, false, null, $this->offset, $this->sliceSize);
             if ($sliceContent === false) {
-                $this->setError(ErrorCode::COSAPI_PARAMS_ERROR, 'read file ' . $this->srcFpath . ' error');
+                $this->setError(ErrorCode::COSAPI_PARAMS_ERROR, 'read file '.$this->srcFpath.' error');
+
                 return false;
             }
 
-            $request                = new HttpRequest();
-            $request->timeoutMs     = $this->timeoutMs;
-            $request->url           = $this->url;
-            $request->method        = 'POST';
-            $request->customHeaders = array(
-                'Authorization: ' . $this->signature,
-            );
-            $request->dataToPost    = array(
-                'op' => 'upload_slice_data',
-                'session' => $this->session,
-                'offset' => $this->offset,
+            $request = new HttpRequest();
+            $request->timeoutMs = $this->timeoutMs;
+            $request->url = $this->url;
+            $request->method = 'POST';
+            $request->customHeaders = [
+                'Authorization: '.$this->signature,
+            ];
+            $request->dataToPost = [
+                'op'          => 'upload_slice_data',
+                'session'     => $this->session,
+                'offset'      => $this->offset,
                 'filecontent' => $sliceContent,
-                'datamd5' => md5($sliceContent),
-            );
-            $request->userData      = array(
+                'datamd5'     => md5($sliceContent),
+            ];
+            $request->userData = [
                 'retryCount' => 0,
-            );
+            ];
 
-            $this->libcurlWrapper->startSendingRequest($request, array($this, 'uploadCallback'));
+            $this->libcurlWrapper->startSendingRequest($request, [$this, 'uploadCallback']);
 
             $this->offset += $this->sliceSize;
         }
@@ -186,28 +187,28 @@ class SliceUploading
      */
     public function finishUploading()
     {
-        $request = array(
-            'url' => $this->url,
-            'method' => 'post',
+        $request = [
+            'url'     => $this->url,
+            'method'  => 'post',
             'timeout' => $this->timeoutMs / 1000,
-            'data' => array(
-                'op' => 'upload_slice_finish',
-                'session' => $this->session,
+            'data'    => [
+                'op'       => 'upload_slice_finish',
+                'session'  => $this->session,
                 'filesize' => $this->fileSize,
-            ),
-            'header' => array(
-                'Authorization: ' . $this->signature,
-            ),
-        );
+            ],
+            'header' => [
+                'Authorization: '.$this->signature,
+            ],
+        ];
 
         $response = $this->sendRequest($request);
         if ($response === false) {
             return false;
         }
 
-        $this->accessUrl    = $response['data']['access_url'];
+        $this->accessUrl = $response['data']['access_url'];
         $this->resourcePath = $response['data']['resource_path'];
-        $this->sourceUrl    = $response['data']['source_url'];
+        $this->sourceUrl = $response['data']['source_url'];
 
         return true;
     }
@@ -217,18 +218,21 @@ class SliceUploading
         $response = HttpClient::sendRequest($request);
         if ($response === false) {
             $this->setError(ErrorCode::COSAPI_NETWORK_ERROR, 'network error');
+
             return false;
         }
 
         $responseJson = json_decode($response, true);
-        if ($responseJson === NULL) {
+        if ($responseJson === null) {
             $this->setError(ErrorCode::COSAPI_NETWORK_ERROR, 'network error');
+
             return false;
         }
 
         $this->requestId = $responseJson['request_id'];
         if ($responseJson['code'] != 0) {
             $this->setError($responseJson['code'], $responseJson['message']);
+
             return false;
         }
 
@@ -237,13 +241,13 @@ class SliceUploading
 
     private function clearError()
     {
-        $this->errorCode    = ErrorCode::COSAPI_SUCCESS;
+        $this->errorCode = ErrorCode::COSAPI_SUCCESS;
         $this->errorMessage = 'success';
     }
 
     private function setError($errorCode, $errorMessage)
     {
-        $this->errorCode    = $errorCode;
+        $this->errorCode = $errorCode;
         $this->errorMessage = $errorMessage;
     }
 
@@ -253,31 +257,31 @@ class SliceUploading
             return;
         }
 
-        $requestErrorCode    = ErrorCode::COSAPI_SUCCESS;
+        $requestErrorCode = ErrorCode::COSAPI_SUCCESS;
         $requestErrorMessage = 'success';
-        $retryCount          = $request->userData['retryCount'];
+        $retryCount = $request->userData['retryCount'];
 
         $responseJson = json_decode($response->body, true);
-        if ($responseJson === NULL) {
-            $requestErrorCode    = ErrorCode::COSAPI_NETWORK_ERROR;
+        if ($responseJson === null) {
+            $requestErrorCode = ErrorCode::COSAPI_NETWORK_ERROR;
             $requestErrorMessage = 'network error';
         }
 
         if ($response->curlErrorCode !== CURLE_OK) {
-            $requestErrorCode    = ErrorCode::COSAPI_NETWORK_ERROR;
-            $requestErrorMessage = 'network error: curl errno ' . $response->curlErrorCode;
+            $requestErrorCode = ErrorCode::COSAPI_NETWORK_ERROR;
+            $requestErrorMessage = 'network error: curl errno '.$response->curlErrorCode;
         }
 
         $this->requestId = $responseJson['request_id'];
         if ($responseJson['code'] != 0) {
-            $requestErrorCode    = $responseJson['code'];
+            $requestErrorCode = $responseJson['code'];
             $requestErrorMessage = $responseJson['message'];
         }
 
         if (isset($responseJson['data']['datamd5']) &&
             $responseJson['data']['datamd5'] !== $request->dataToPost['datamd5']
         ) {
-            $requestErrorCode    = ErrorCode::COSAPI_INTEGRITY_ERROR;
+            $requestErrorCode = ErrorCode::COSAPI_INTEGRITY_ERROR;
             $requestErrorMessage = 'cosapi integrity error';
         }
 
@@ -286,8 +290,9 @@ class SliceUploading
                 $this->setError($requestErrorCode, $requestErrorMessage);
             } else {
                 $request->userData['retryCount'] += 1;
-                $this->libcurlWrapper->startSendingRequest($request, array($this, 'uploadCallback'));
+                $this->libcurlWrapper->startSendingRequest($request, [$this, 'uploadCallback']);
             }
+
             return;
         }
 
@@ -298,29 +303,30 @@ class SliceUploading
         // Send next slice.
         $nextSliceContent = file_get_contents($this->srcFpath, false, null, $this->offset, $this->sliceSize);
         if ($nextSliceContent === false) {
-            $this->setError(ErrorCode::COSAPI_PARAMS_ERROR, 'read file ' . $this->srcFpath . ' error');
+            $this->setError(ErrorCode::COSAPI_PARAMS_ERROR, 'read file '.$this->srcFpath.' error');
+
             return;
         }
 
-        $nextSliceRequest                = new HttpRequest();
-        $nextSliceRequest->timeoutMs     = $this->timeoutMs;
-        $nextSliceRequest->url           = $this->url;
-        $nextSliceRequest->method        = 'POST';
-        $nextSliceRequest->customHeaders = array(
-            'Authorization: ' . $this->signature,
-        );
-        $nextSliceRequest->dataToPost    = array(
-            'op' => 'upload_slice_data',
-            'session' => $this->session,
-            'offset' => $this->offset,
+        $nextSliceRequest = new HttpRequest();
+        $nextSliceRequest->timeoutMs = $this->timeoutMs;
+        $nextSliceRequest->url = $this->url;
+        $nextSliceRequest->method = 'POST';
+        $nextSliceRequest->customHeaders = [
+            'Authorization: '.$this->signature,
+        ];
+        $nextSliceRequest->dataToPost = [
+            'op'          => 'upload_slice_data',
+            'session'     => $this->session,
+            'offset'      => $this->offset,
             'filecontent' => $nextSliceContent,
-            'datamd5' => md5($nextSliceContent),
-        );
-        $nextSliceRequest->userData      = array(
+            'datamd5'     => md5($nextSliceContent),
+        ];
+        $nextSliceRequest->userData = [
             'retryCount' => 0,
-        );
+        ];
 
-        $this->libcurlWrapper->startSendingRequest($nextSliceRequest, array($this, 'uploadCallback'));
+        $this->libcurlWrapper->startSendingRequest($nextSliceRequest, [$this, 'uploadCallback']);
 
         $this->offset += $this->sliceSize;
     }
