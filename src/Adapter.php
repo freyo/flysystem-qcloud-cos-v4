@@ -33,7 +33,7 @@ class Adapter extends AbstractAdapter
 
         $this->bucket = $config['bucket'];
 
-        $this->setPathPrefix($config['protocol'] . '://' . $config['domain'] . '/');
+        $this->setPathPrefix($config['protocol'].'://'.$config['domain'].'/');
 
         Cosapi::setTimeout($config['timeout']);
         Cosapi::setRegion($config['region']);
@@ -62,8 +62,9 @@ class Adapter extends AbstractAdapter
      * @param string $contents
      * @param Config $config
      *
-     * @return bool
      * @throws RuntimeException
+     *
+     * @return bool
      */
     public function write($path, $contents, Config $config)
     {
@@ -387,8 +388,9 @@ class Adapter extends AbstractAdapter
     /**
      * @param $response
      *
-     * @return mixed
      * @throws RuntimeException
+     *
+     * @return mixed
      */
     protected function normalizeResponse($response)
     {

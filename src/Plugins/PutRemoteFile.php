@@ -33,11 +33,11 @@ class PutRemoteFile extends AbstractPlugin
             ->getBody()
             ->getContents();
 
-        $filename  = md5($contents);
+        $filename = md5($contents);
         $extension = ExtensionGuesser::getInstance()->guess(MimeType::detectByContent($contents));
-        $name      = $filename . '.' . $extension;
+        $name = $filename.'.'.$extension;
 
-        $path = trim($path . '/' . $name, '/');
+        $path = trim($path.'/'.$name, '/');
 
         return $this->filesystem->put($path, $contents, $options) ? $path : false;
     }
