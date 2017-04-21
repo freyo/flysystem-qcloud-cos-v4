@@ -22,8 +22,8 @@ class Auth
      */
     public static function createReusableSignature($expiration, $bucket, $filepath = null)
     {
-        $appId     = Conf::getAppId();
-        $secretId  = Conf::getSecretId();
+        $appId = Conf::getAppId();
+        $secretId = Conf::getSecretId();
         $secretKey = Conf::getSecretKey();
 
         if (empty($appId) || empty($secretId) || empty($secretKey)) {
@@ -34,7 +34,7 @@ class Auth
             return self::createSignature($appId, $secretId, $secretKey, $expiration, $bucket, null);
         } else {
             if (preg_match('/^\//', $filepath) == 0) {
-                $filepath = '/' . $filepath;
+                $filepath = '/'.$filepath;
             }
 
             return self::createSignature($appId, $secretId, $secretKey, $expiration, $bucket, $filepath);
@@ -49,8 +49,8 @@ class Auth
      */
     public static function createNonreusableSignature($bucket, $filepath)
     {
-        $appId     = Conf::getAppId();
-        $secretId  = Conf::getSecretId();
+        $appId = Conf::getAppId();
+        $secretId = Conf::getSecretId();
         $secretKey = Conf::getSecretKey();
 
         if (empty($appId) || empty($secretId) || empty($secretKey)) {
@@ -58,9 +58,9 @@ class Auth
         }
 
         if (preg_match('/^\//', $filepath) == 0) {
-            $filepath = '/' . $filepath;
+            $filepath = '/'.$filepath;
         }
-        $fileId = '/' . $appId . '/' . $bucket . $filepath;
+        $fileId = '/'.$appId.'/'.$bucket.$filepath;
 
         return self::createSignature($appId, $secretId, $secretKey, 0, $bucket, $fileId);
     }
@@ -77,11 +77,11 @@ class Auth
             return self::AUTH_SECRET_ID_KEY_ERROR;
         }
 
-        $now       = time();
-        $random    = rand();
+        $now = time();
+        $random = rand();
         $plainText = "a=$appId&k=$secretId&e=$expiration&t=$now&r=$random&f=$fileId&b=$bucket";
-        $bin       = hash_hmac('SHA1', $plainText, $secretKey, true);
-        $bin       = $bin . $plainText;
+        $bin = hash_hmac('SHA1', $plainText, $secretKey, true);
+        $bin = $bin.$plainText;
 
         $signature = base64_encode($bin);
 
