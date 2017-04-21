@@ -28,7 +28,7 @@ class HttpClient
             if (function_exists('curl_reset')) {
                 curl_reset(self::$curlHandler);
             } else {
-                my_curl_reset(self::$curlHandler);
+                LibcurlHelper::my_curl_reset(self::$curlHandler);
             }
         } else {
             self::$curlHandler = curl_init();
@@ -64,7 +64,7 @@ class HttpClient
             array_push($header, 'Expect: 100-continue');
 
             if (is_array($request['data'])) {
-                $arr = buildCustomPostFields($request['data']);
+                $arr = LibcurlHelper::buildCustomPostFields($request['data']);
                 array_push($header, 'Content-Type: multipart/form-data; boundary='.$arr[0]);
                 curl_setopt(self::$curlHandler, CURLOPT_POSTFIELDS, $arr[1]);
             } else {

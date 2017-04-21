@@ -51,7 +51,7 @@ class LibcurlWrapper
             }
 
             curl_setopt($curlHandle, CURLOPT_POST, true);
-            $arr = buildCustomPostFields($httpRequest->dataToPost);
+            $arr = LibcurlHelper::buildCustomPostFields($httpRequest->dataToPost);
             array_push($headers, 'Expect: 100-continue');
             array_push($headers, 'Content-Type: multipart/form-data; boundary='.$arr[0]);
             curl_setopt($curlHandle, CURLOPT_POSTFIELDS, $arr[1]);
@@ -152,7 +152,7 @@ class LibcurlWrapper
         if (function_exists('curl_reset')) {
             curl_reset($handle);
         } else {
-            my_curl_reset($handle);
+            LibcurlHelper::my_curl_reset($handle);
         }
     }
 }
