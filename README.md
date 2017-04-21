@@ -68,7 +68,7 @@ if you have used COS before October 2016, [v3](https://packagist.org/packages/fr
           'secret_key' => env('COSV4_SECRET_KEY'),
           'timeout' => env('COSV4_TIMEOUT', 60),
           'bucket' => env('COSV4_BUCKET'),
-		  'region' => env('COSV4_REGION'),
+          'region' => env('COSV4_REGION', 'gz'),
       ],
   ],
   ```
