@@ -22,7 +22,7 @@ class ServiceProvider extends LaravelServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/filesystems.php' => config_path('filesystems.php'),
+            __DIR__.'/filesystems.php' => config_path('filesystems.php'),
         ]);
 
         Storage::extend('cosv4', function ($app, $config) {
@@ -43,7 +43,7 @@ class ServiceProvider extends LaravelServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/filesystems.php', 'filesystems'
+            __DIR__.'/filesystems.php', 'filesystems'
         );
     }
 }

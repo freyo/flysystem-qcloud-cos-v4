@@ -8,19 +8,19 @@ class HttpClient
     private static $curlHandler;
 
     /**
-     * send http request
+     * send http request.
      *
-     * @param  array $request http请求信息
-     *                        url        : 请求的url地址
-     *                        method     : 请求方法，'get', 'post', 'put', 'delete', 'head'
-     *                        data       : 请求数据，如有设置，则method为post
-     *                        header     : 需要设置的http头部
-     *                        host       : 请求头部host
-     *                        timeout    : 请求超时时间
-     *                        cert       : ca文件路径
-     *                        ssl_version: SSL版本号
+     * @param array $request http请求信息
+     *                       url        : 请求的url地址
+     *                       method     : 请求方法，'get', 'post', 'put', 'delete', 'head'
+     *                       data       : 请求数据，如有设置，则method为post
+     *                       header     : 需要设置的http头部
+     *                       host       : 请求头部host
+     *                       timeout    : 请求超时时间
+     *                       cert       : ca文件路径
+     *                       ssl_version: SSL版本号
      *
-     * @return string    http请求响应
+     * @return string http请求响应
      */
     public static function sendRequest($request)
     {
@@ -38,24 +38,24 @@ class HttpClient
 
         $method = 'GET';
         if (isset($request['method']) &&
-            in_array(strtolower($request['method']), array('get', 'post', 'put', 'delete', 'head'))
+            in_array(strtolower($request['method']), ['get', 'post', 'put', 'delete', 'head'])
         ) {
             $method = strtoupper($request['method']);
-        } else if (isset($request['data'])) {
+        } elseif (isset($request['data'])) {
             $method = 'POST';
         }
 
-        $header   = isset($request['header']) ? $request['header'] : array();
-        $header[] = 'Method:' . $method;
-        $header[] = 'User-Agent:' . Conf::getUserAgent();
+        $header = isset($request['header']) ? $request['header'] : [];
+        $header[] = 'Method:'.$method;
+        $header[] = 'User-Agent:'.Conf::getUserAgent();
         $header[] = 'Connection: keep-alive';
 
-        isset($request['host']) && $header[] = 'Host:' . $request['host'];
+        isset($request['host']) && $header[] = 'Host:'.$request['host'];
         curl_setopt(self::$curlHandler, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt(self::$curlHandler, CURLOPT_CUSTOMREQUEST, $method);
         isset($request['timeout']) && curl_setopt(self::$curlHandler, CURLOPT_TIMEOUT, $request['timeout']);
 
-        if (isset($request['data']) && in_array($method, array('POST', 'PUT'))) {
+        if (isset($request['data']) && in_array($method, ['POST', 'PUT'])) {
             if (defined('CURLOPT_SAFE_UPLOAD')) {
                 curl_setopt(self::$curlHandler, CURLOPT_SAFE_UPLOAD, true);
             }
@@ -65,7 +65,7 @@ class HttpClient
 
             if (is_array($request['data'])) {
                 $arr = buildCustomPostFields($request['data']);
-                array_push($header, 'Content-Type: multipart/form-data; boundary=' . $arr[0]);
+                array_push($header, 'Content-Type: multipart/form-data; boundary='.$arr[0]);
                 curl_setopt(self::$curlHandler, CURLOPT_POSTFIELDS, $arr[1]);
             } else {
                 curl_setopt(self::$curlHandler, CURLOPT_POSTFIELDS, $request['data']);
@@ -73,7 +73,7 @@ class HttpClient
         }
         curl_setopt(self::$curlHandler, CURLOPT_HTTPHEADER, $header);
 
-        $ssl = substr($request['url'], 0, 8) == "https://" ? true : false;
+        $ssl = substr($request['url'], 0, 8) == 'https://' ? true : false;
         if (isset($request['cert'])) {
             curl_setopt(self::$curlHandler, CURLOPT_SSL_VERIFYPEER, true);
             curl_setopt(self::$curlHandler, CURLOPT_CAINFO, $request['cert']);
@@ -83,7 +83,7 @@ class HttpClient
             } else {
                 curl_setopt(self::$curlHandler, CURLOPT_SSLVERSION, 4);
             }
-        } else if ($ssl) {
+        } elseif ($ssl) {
             curl_setopt(self::$curlHandler, CURLOPT_SSL_VERIFYPEER, false);   //true any ca
             curl_setopt(self::$curlHandler, CURLOPT_SSL_VERIFYHOST, 1);       //check only host
             if (isset($request['ssl_version'])) {
@@ -92,8 +92,9 @@ class HttpClient
                 curl_setopt(self::$curlHandler, CURLOPT_SSLVERSION, 4);
             }
         }
-        $ret            = curl_exec(self::$curlHandler);
+        $ret = curl_exec(self::$curlHandler);
         self::$httpInfo = curl_getinfo(self::$curlHandler);
+
         return $ret;
     }
 
