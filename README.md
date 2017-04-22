@@ -41,7 +41,8 @@ if you have used COS before October 2016, [v3](https://packagist.org/packages/fr
       'secret_key' => 'your-secret-key',
       'timeout' => 60,
       'bucket' => 'your-bucket-name',
-  ];
+      'region' => 'gz',
+  ],
 
   $adapter = new Adapter($config);
   $filesystem = new Filesystem($adapter);
@@ -72,3 +73,11 @@ if you have used COS before October 2016, [v3](https://packagist.org/packages/fr
       ],
   ],
   ```
+  
+## Region
+
+|地区|区域表示|
+|:-:|:-:|
+|华南|gz|
+|华北|tj|
+|华东|sh|
