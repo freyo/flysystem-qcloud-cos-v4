@@ -82,6 +82,8 @@ string $flysystem->getMimetype('file.md');
 int $flysystem->getTimestamp('file.md');
 ```
 
+[Full API documentation.](http://flysystem.thephpleague.com/api/)
+
 ## Use in Laravel
 
 1. Register `config/app.php`:
@@ -121,7 +123,6 @@ $exists = $disk->has('file.jpg');
 
 // get timestamp
 $time = $disk->lastModified('file1.jpg');
-$time = $disk->getTimestamp('file1.jpg');
 
 // copy a file
 $disk->copy('old/file1.jpg', 'new/file1.jpg');
@@ -131,9 +132,16 @@ $disk->move('old/file1.jpg', 'new/file1.jpg');
 
 // get file contents
 $contents = $disk->read('folder/my_file.txt');
+
+// get url
+$url = $disk->url('new/file1.jpg');
+
+// create a file from remote(plugin support)
+$disk->putRemoteFile('avatars/1', 'http://example.org/avatar.jpg');
+$disk->putRemoteFileAs('avatars/1', 'http://example.org/avatar.jpg', 'file1.jpg');
 ```
 
-[Full API documentation.](http://flysystem.thephpleague.com/api/)
+[Full API documentation.](https://laravel.com/api/5.4/Illuminate/Contracts/Filesystem/Filesystem.html)
 
 ## Region
 
