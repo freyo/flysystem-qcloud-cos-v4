@@ -19,6 +19,7 @@ class QcloudCOSv3AdapterTest extends TestCase
             'timeout' => 60,
             'bucket' => 'cosv4test',
             'region' => 'gz',
+            'debug' => false,
         ];
 
         $adapter = new Adapter($config);
@@ -69,13 +70,11 @@ class QcloudCOSv3AdapterTest extends TestCase
     }
 
     /**
-     * @dataProvider             Provider
-     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
-     * @expectedExceptionMessage ERROR_CMD_FILE_NOTEXIST
+     * @dataProvider Provider
      */
     public function testRenameFailed($adapter)
     {
-        $this->assertTrue($adapter->rename('foo/notexist.md', 'foo/rename.md'));
+        $this->assertFalse($adapter->rename('foo/notexist.md', 'foo/rename.md'));
     }
 
     /**
@@ -87,13 +86,11 @@ class QcloudCOSv3AdapterTest extends TestCase
     }
 
     /**
-     * @dataProvider             Provider
-     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
-     * @expectedExceptionMessage ERROR_CMD_FILE_NOTEXIST
+     * @dataProvider Provider
      */
     public function testCopyFailed($adapter)
     {
-        $this->assertTrue($adapter->copy('foo/notexist.md', 'foo/copy.md'));
+        $this->assertFalse($adapter->copy('foo/notexist.md', 'foo/copy.md'));
     }
 
     /**
@@ -105,13 +102,11 @@ class QcloudCOSv3AdapterTest extends TestCase
     }
 
     /**
-     * @dataProvider             Provider
-     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
-     * @expectedExceptionMessage ERROR_CMD_FILE_NOTEXIST
+     * @dataProvider Provider
      */
     public function testDeleteFailed($adapter)
     {
-        $this->assertTrue($adapter->delete('foo/notexist.md'));
+        $this->assertFalse($adapter->delete('foo/notexist.md'));
     }
 
     /**
@@ -123,13 +118,11 @@ class QcloudCOSv3AdapterTest extends TestCase
     }
 
     /**
-     * @dataProvider             Provider
-     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
-     * @expectedExceptionMessage ERROR_CMD_COS_PATH_CONFLICT
+     * @dataProvider Provider
      */
     public function testCreateDirFailed($adapter)
     {
-        $this->assertArrayHasKey('ctime', $adapter->createDir('bar', new Config()));
+        $this->assertFalse($adapter->createDir('bar', new Config()));
     }
 
     /**
@@ -141,13 +134,11 @@ class QcloudCOSv3AdapterTest extends TestCase
     }
 
     /**
-     * @dataProvider             Provider
-     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
-     * @expectedExceptionMessage ERROR_CMD_FILE_NOTEXIST
+     * @dataProvider Provider
      */
     public function testDeleteDirFailed($adapter)
     {
-        $this->assertTrue($adapter->deleteDir('notexist'));
+        $this->assertFalse($adapter->deleteDir('notexist'));
     }
 
     /**

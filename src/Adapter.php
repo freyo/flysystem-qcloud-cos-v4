@@ -21,6 +21,11 @@ class Adapter extends AbstractAdapter
     protected $bucket;
 
     /**
+     * @var
+     */
+    protected $debug;
+
+    /**
      * Adapter constructor.
      *
      * @param $config
@@ -32,8 +37,9 @@ class Adapter extends AbstractAdapter
         Conf::setSecretKey($config['secret_key']);
 
         $this->bucket = $config['bucket'];
+        $this->debug  = $config['debug'];
 
-        $this->setPathPrefix($config['protocol'].'://'.$config['domain'].'/');
+        $this->setPathPrefix($config['protocol'] . '://' . $config['domain'] . '/');
 
         Cosapi::setTimeout($config['timeout']);
         Cosapi::setRegion($config['region']);
@@ -72,7 +78,7 @@ class Adapter extends AbstractAdapter
 
         try {
             $response = $this->normalizeResponse(
-                Cosapi::upload($this->getBucket(), $tmpfname, $path)
+                Cosapi::upload($this->getBucket(), $tmpfname, $path, null, null, 0)
             );
 
             $this->deleteTempFile($tmpfname);
@@ -104,7 +110,7 @@ class Adapter extends AbstractAdapter
 
         try {
             $response = $this->normalizeResponse(
-                Cosapi::upload($this->getBucket(), $uri, $path)
+                Cosapi::upload($this->getBucket(), $uri, $path, null, null, 0)
             );
 
             $this->setContentType($path, stream_get_contents($resource));
@@ -440,6 +446,10 @@ class Adapter extends AbstractAdapter
             return isset($response['data']) ? $response['data'] : true;
         }
 
-        throw new RuntimeException($response['message'], $response['code']);
+        if ($this->debug) {
+            throw new RuntimeException($response['message'], $response['code']);
+        }
+
+        return false;
     }
 }

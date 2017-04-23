@@ -73,6 +73,7 @@ return [
             'timeout'    => env('COSV4_TIMEOUT', 60),
             'bucket'     => env('COSV4_BUCKET'),
             'region'     => env('COSV4_REGION', 'gz'),
+            'debug'      => env('COSV4_DEBUG', false),
         ],
 
     ],

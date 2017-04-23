@@ -42,7 +42,8 @@ if you have used COS before October 2016, [v3](https://packagist.org/packages/fr
       'timeout' => 60,
       'bucket' => 'your-bucket-name',
       'region' => 'gz',
-  ],
+      'debug' => false,
+  ];
 
   $adapter = new Adapter($config);
   $filesystem = new Filesystem($adapter);
@@ -70,6 +71,7 @@ if you have used COS before October 2016, [v3](https://packagist.org/packages/fr
           'timeout' => env('COSV4_TIMEOUT', 60),
           'bucket' => env('COSV4_BUCKET'),
           'region' => env('COSV4_REGION', 'gz'),
+          'debug' => env('COSV4_DEBUG', false),
       ],
   ],
   ```
