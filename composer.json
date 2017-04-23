@@ -7,9 +7,19 @@
         "league/flysystem": "^1.0.27",
         "guzzlehttp/guzzle": "~6.2.1"
     },
+    "require-dev": {
+        "php": ">=5.6.0",
+        "phpunit/phpunit": "~4.8",
+        "mockery/mockery": "1.0.x-dev"
+    },	
     "autoload": {
         "psr-4": {
             "Freyo\\Flysystem\\QcloudCOSv4\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Freyo\\Flysystem\\QcloudCOSv4\\Tests\\": "tests"
         }
     },
     "license": "MIT",
