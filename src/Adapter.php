@@ -76,6 +76,8 @@ class Adapter extends AbstractAdapter
             );
 
             $this->deleteTempFile($tmpfname);
+
+            $this->setContentType($path, $contents);
         } catch (RuntimeException $exception) {
             $this->deleteTempFile($tmpfname);
 
@@ -104,6 +106,8 @@ class Adapter extends AbstractAdapter
             $response = $this->normalizeResponse(
                 Cosapi::upload($this->getBucket(), $uri, $path)
             );
+
+            $this->setContentType($path, stream_get_contents($resource));
         } catch (RuntimeException $exception) {
             if ($exception->getCode() == -4018) {
                 return $this->getMetadata($path);
@@ -124,7 +128,27 @@ class Adapter extends AbstractAdapter
      */
     public function update($path, $contents, Config $config)
     {
-        return $this->write($path, $contents, $config);
+        $tmpfname = $this->writeTempFile($contents);
+
+        try {
+            $response = $this->normalizeResponse(
+                Cosapi::upload($this->getBucket(), $tmpfname, $path, null, null, 0)
+            );
+
+            $this->deleteTempFile($tmpfname);
+
+            $this->setContentType($path, $contents);
+        } catch (RuntimeException $exception) {
+            $this->deleteTempFile($tmpfname);
+
+            if ($exception->getCode() == -4018) {
+                return $this->getMetadata($path);
+            }
+
+            throw $exception;
+        }
+
+        return $response;
     }
 
     /**
@@ -136,7 +160,23 @@ class Adapter extends AbstractAdapter
      */
     public function updateStream($path, $resource, Config $config)
     {
-        return $this->writeStream($path, $resource, $config);
+        $uri = stream_get_meta_data($resource)['uri'];
+
+        try {
+            $response = $this->normalizeResponse(
+                Cosapi::upload($this->getBucket(), $uri, $path, null, null, 0)
+            );
+
+            $this->setContentType($path, stream_get_contents($resource));
+        } catch (RuntimeException $exception) {
+            if ($exception->getCode() == -4018) {
+                return $this->getMetadata($path);
+            }
+
+            throw $exception;
+        }
+
+        return $response;
     }
 
     /**
