@@ -8,9 +8,8 @@
         "guzzlehttp/guzzle": "~6.2.1"
     },
     "require-dev": {
-        "php": ">=5.6.0",
-        "phpunit/phpunit": "~4.8",
-        "mockery/mockery": "1.0.x-dev"
+        "php": ">=5.5.0",
+        "phpunit/phpunit": "~4.8"
     },	
     "autoload": {
         "psr-4": {
