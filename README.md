@@ -80,6 +80,10 @@ string $flysystem->getUrl('file.md');
 string $flysystem->getMimetype('file.md');
 
 int $flysystem->getTimestamp('file.md');
+
+string $flysystem->getVisibility('file.md');
+
+bool $flysystem->setVisibility('file.md', 'public'); //or 'private'
 ```
 
 [Full API documentation.](http://flysystem.thephpleague.com/api/)
