@@ -117,7 +117,7 @@ bool $flysystem->setVisibility('file.md', 'public'); //or 'private'
 ### Usage
 
 ```php
-$disk = Storage::disk('qiniu');
+$disk = Storage::disk('cosv4');
 
 // create a file
 $disk->put('avatars/1', $fileContents);
