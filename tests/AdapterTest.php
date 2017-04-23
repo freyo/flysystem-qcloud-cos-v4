@@ -2,11 +2,11 @@
 
 namespace Freyo\Flysystem\QcloudCOSv4\Tests;
 
+use Freyo\Flysystem\QcloudCOSv4\Adapter;
 use League\Flysystem\Config;
 use PHPUnit\Framework\TestCase;
-use Freyo\Flysystem\QcloudCOSv4\Adapter;
 
-class QcloudCOSv3AdapterTest extends TestCase
+class AdapterTest extends TestCase
 {
     public function Provider()
     {
@@ -34,7 +34,15 @@ class QcloudCOSv3AdapterTest extends TestCase
      */
     public function testWrite($adapter)
     {
-        $this->assertArrayHasKey('access_url', $adapter->write('foo/foo.md', 'content', new Config()));
+        $this->assertTrue((bool)$adapter->write('foo/foo.md', 'content', new Config()));
+    }
+
+    /**
+     * @dataProvider Provider
+     */
+    public function testWriteFailed($adapter)
+    {
+        $this->assertFalse((bool)$adapter->write('foo/foo.md', 'newcontent', new Config(['insertOnly' => 1])));
     }
 
     /**
@@ -42,7 +50,7 @@ class QcloudCOSv3AdapterTest extends TestCase
      */
     public function testWriteStream($adapter)
     {
-        $this->assertArrayHasKey('access_url', $adapter->writeStream('foo/bar.md', tmpfile(), new Config()));
+        $this->assertTrue((bool)$adapter->writeStream('foo/bar.md', tmpfile(), new Config()));
     }
 
     /**
@@ -50,7 +58,7 @@ class QcloudCOSv3AdapterTest extends TestCase
      */
     public function testUpdate($adapter)
     {
-        $this->assertArrayHasKey('access_url', $adapter->update('foo/bar.md', 'newcontent', new Config()));
+        $this->assertTrue((bool)$adapter->update('foo/bar.md', 'newcontent', new Config()));
     }
 
     /**
@@ -58,7 +66,7 @@ class QcloudCOSv3AdapterTest extends TestCase
      */
     public function testUpdateStream($adapter)
     {
-        $this->assertArrayHasKey('access_url', $adapter->updateStream('foo/foo.md', tmpfile(), new Config()));
+        $this->assertTrue((bool)$adapter->updateStream('foo/foo.md', tmpfile(), new Config()));
     }
 
     /**
@@ -114,7 +122,7 @@ class QcloudCOSv3AdapterTest extends TestCase
      */
     public function testCreateDir($adapter)
     {
-        $this->assertArrayHasKey('ctime', $adapter->createDir('bar', new Config()));
+        $this->assertTrue((bool)$adapter->createDir('bar', new Config()));
     }
 
     /**
@@ -155,6 +163,14 @@ class QcloudCOSv3AdapterTest extends TestCase
     public function testHas($adapter)
     {
         $this->assertTrue($adapter->has('foo/bar.md'));
+    }
+
+    /**
+     * @dataProvider Provider
+     */
+    public function testHasFailed($adapter)
+    {
+        $this->assertFalse($adapter->has('foo/noexist.md'));
     }
 
     /**

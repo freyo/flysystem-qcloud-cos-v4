@@ -78,7 +78,8 @@ class Adapter extends AbstractAdapter
 
         try {
             $response = $this->normalizeResponse(
-                Cosapi::upload($this->getBucket(), $tmpfname, $path, null, null, 0)
+                Cosapi::upload($this->getBucket(), $tmpfname, $path,
+                    null, null, $config->get('insertOnly', 0))
             );
 
             $this->deleteTempFile($tmpfname);
@@ -103,6 +104,7 @@ class Adapter extends AbstractAdapter
      * @param Config   $config
      *
      * @return bool
+     * @throws RuntimeException
      */
     public function writeStream($path, $resource, Config $config)
     {
@@ -110,7 +112,8 @@ class Adapter extends AbstractAdapter
 
         try {
             $response = $this->normalizeResponse(
-                Cosapi::upload($this->getBucket(), $uri, $path, null, null, 0)
+                Cosapi::upload($this->getBucket(), $uri, $path,
+                    null, null, $config->get('insertOnly', 0))
             );
 
             $this->setContentType($path, stream_get_contents($resource));
@@ -131,6 +134,7 @@ class Adapter extends AbstractAdapter
      * @param Config $config
      *
      * @return bool
+     * @throws RuntimeException
      */
     public function update($path, $contents, Config $config)
     {
@@ -138,7 +142,8 @@ class Adapter extends AbstractAdapter
 
         try {
             $response = $this->normalizeResponse(
-                Cosapi::upload($this->getBucket(), $tmpfname, $path, null, null, 0)
+                Cosapi::upload($this->getBucket(), $tmpfname, $path,
+                    null, null, 0)
             );
 
             $this->deleteTempFile($tmpfname);
@@ -163,6 +168,7 @@ class Adapter extends AbstractAdapter
      * @param Config   $config
      *
      * @return bool
+     * @throws RuntimeException
      */
     public function updateStream($path, $resource, Config $config)
     {
@@ -170,7 +176,8 @@ class Adapter extends AbstractAdapter
 
         try {
             $response = $this->normalizeResponse(
-                Cosapi::upload($this->getBucket(), $uri, $path, null, null, 0)
+                Cosapi::upload($this->getBucket(), $uri, $path,
+                    null, null, 0)
             );
 
             $this->setContentType($path, stream_get_contents($resource));
@@ -252,7 +259,7 @@ class Adapter extends AbstractAdapter
      * @param string $path
      * @param string $visibility
      *
-     * @return mixed
+     * @return bool
      */
     public function setVisibility($path, $visibility)
     {
@@ -271,12 +278,10 @@ class Adapter extends AbstractAdapter
     public function has($path)
     {
         try {
-            $this->getMetadata($path);
+            return (bool)$this->getMetadata($path);
         } catch (RuntimeException $exception) {
             return false;
         }
-
-        return true;
     }
 
     /**
@@ -303,7 +308,7 @@ class Adapter extends AbstractAdapter
      * @param string $directory
      * @param bool   $recursive
      *
-     * @return bool
+     * @return array|bool
      */
     public function listContents($directory = '', $recursive = false)
     {
@@ -315,7 +320,7 @@ class Adapter extends AbstractAdapter
     /**
      * @param string $path
      *
-     * @return bool
+     * @return array|bool
      */
     public function getMetadata($path)
     {
@@ -408,6 +413,8 @@ class Adapter extends AbstractAdapter
 
     /**
      * @param $tmpfname
+     *
+     * @return bool
      */
     private function deleteTempFile($tmpfname)
     {
