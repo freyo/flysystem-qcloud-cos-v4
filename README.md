@@ -145,7 +145,7 @@ $disk->putRemoteFile('avatars/1', 'http://example.org/avatar.jpg');
 $disk->putRemoteFileAs('avatars/1', 'http://example.org/avatar.jpg', 'file1.jpg');
 ```
 
-[Full API documentation.](https://laravel.com/api/5.4/Illuminate/Contracts/Filesystem/Filesystem.html)
+[Full API documentation.](https://laravel.com/api/5.4/Illuminate/Contracts/Filesystem/Cloud.html)
 
 ## Region
 
