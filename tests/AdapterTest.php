@@ -2,23 +2,23 @@
 
 namespace Freyo\Flysystem\QcloudCOSv4\Tests;
 
+use Freyo\Flysystem\QcloudCOSv4\Adapter;
 use League\Flysystem\Config;
 use PHPUnit\Framework\TestCase;
-use Freyo\Flysystem\QcloudCOSv4\Adapter;
 
-class QcloudCOSv3AdapterTest extends TestCase
+class AdapterTest extends TestCase
 {
     public function Provider()
     {
         $config = [
-            'protocol' => 'http',
-            'domain' => 'cosv4test-1252025751.file.myqcloud.com',
-            'app_id' => '1252025751',
-            'secret_id' => 'AKIDhCQN6arlcCUUDejykGVUEhuqVu5zqy4t',
+            'protocol'   => 'http',
+            'domain'     => 'cosv4test-1252025751.file.myqcloud.com',
+            'app_id'     => '1252025751',
+            'secret_id'  => 'AKIDhCQN6arlcCUUDejykGVUEhuqVu5zqy4t',
             'secret_key' => 'g5E8pFOH6fwvsYx6zbw1qPhiV3OSEjx0',
-            'timeout' => 60,
-            'bucket' => 'cosv4test',
-            'region' => 'gz',
+            'timeout'    => 60,
+            'bucket'     => 'cosv4test',
+            'region'     => 'gz',
         ];
 
         $adapter = new Adapter($config);
@@ -180,7 +180,7 @@ class QcloudCOSv3AdapterTest extends TestCase
     public function testGetUrl($adapter, $config)
     {
         $this->assertSame(
-            $config['protocol'] . '://' . $config['domain'] . '/foo/bar.md',
+            $config['protocol'].'://'.$config['domain'].'/foo/bar.md',
             $adapter->getUrl('foo/bar.md')
         );
     }

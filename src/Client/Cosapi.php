@@ -773,7 +773,7 @@ class Cosapi
     {
         $srcFpath = self::normalizerPath($srcFpath);
         $dstFpath = self::normalizerPath($dstFpath);
-        
+
         $url = self::generateResUrl($bucket, $srcFpath);
         $sign = Auth::createNonreusableSignature($bucket, $srcFpath);
         $data = [
@@ -808,7 +808,7 @@ class Cosapi
     {
         $srcFpath = self::normalizerPath($srcFpath);
         $dstFpath = self::normalizerPath($dstFpath);
-        
+
         $url = self::generateResUrl($bucket, $srcFpath);
         $sign = Auth::createNonreusableSignature($bucket, $srcFpath);
         $data = [
