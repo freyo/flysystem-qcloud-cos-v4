@@ -64,6 +64,14 @@ class AdapterTest extends TestCase
     /**
      * @dataProvider Provider
      */
+    public function testRead($adapter)
+    {
+        $this->assertSame(['contents' => 'newcontent'], $adapter->read('foo/bar.md'));
+    }
+
+    /**
+     * @dataProvider Provider
+     */
     public function testUpdateStream($adapter)
     {
         $this->assertTrue((bool)$adapter->updateStream('foo/foo.md', tmpfile(), new Config()));
@@ -171,14 +179,6 @@ class AdapterTest extends TestCase
     public function testHasFailed($adapter)
     {
         $this->assertFalse($adapter->has('foo/noexist.md'));
-    }
-
-    /**
-     * @dataProvider Provider
-     */
-    public function testRead($adapter)
-    {
-        $this->assertSame(['contents' => 'newcontent'], $adapter->read('foo/bar.md'));
     }
 
     /**
