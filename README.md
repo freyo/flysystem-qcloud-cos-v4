@@ -1,6 +1,9 @@
 # flysystem-qcloud-cos-v4
 
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
+[![Build Status](https://img.shields.io/travis/freyo/flysystem-qcloud-cos-v4/master.svg?style=flat-square)](https://travis-ci.org/freyo/flysystem-qcloud-cos-v4)
+[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/freyo/flysystem-qcloud-cos-v4.svg?style=flat-square)](https://scrutinizer-ci.com/g/freyo/flysystem-qcloud-cos-v4)
+[![Quality Score](https://img.shields.io/scrutinizer/g/freyo/flysystem-qcloud-cos-v4.svg?style=flat-square)](https://scrutinizer-ci.com/g/freyo/flysystem-qcloud-cos-v4)
 [![Packagist Version](https://img.shields.io/packagist/v/freyo/flysystem-qcloud-cos-v4.svg?style=flat-square)](https://packagist.org/packages/freyo/flysystem-qcloud-cos-v4)
 [![Total Downloads](https://img.shields.io/packagist/dt/freyo/flysystem-qcloud-cos-v4.svg?style=flat-square)](https://packagist.org/packages/freyo/flysystem-qcloud-cos-v4)
 
