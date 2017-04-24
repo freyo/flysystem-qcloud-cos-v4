@@ -37,9 +37,9 @@ class Adapter extends AbstractAdapter
         Conf::setSecretKey($config['secret_key']);
 
         $this->bucket = $config['bucket'];
-        $this->debug  = $config['debug'];
+        $this->debug = $config['debug'];
 
-        $this->setPathPrefix($config['protocol'] . '://' . $config['domain'] . '/');
+        $this->setPathPrefix($config['protocol'].'://'.$config['domain'].'/');
 
         Cosapi::setTimeout($config['timeout']);
         Cosapi::setRegion($config['region']);
@@ -87,7 +87,7 @@ class Adapter extends AbstractAdapter
             if (false === $response) {
                 return false;
             }
-            
+
             $this->setContentType($path, $contents);
         } catch (RuntimeException $exception) {
             $this->deleteTempFile($tmpfname);
@@ -118,8 +118,8 @@ class Adapter extends AbstractAdapter
 
         if (false === $response) {
             return false;
-        }        
-        
+        }
+
         $this->setContentType($path, stream_get_contents($resource));
 
         return $response;
@@ -145,11 +145,11 @@ class Adapter extends AbstractAdapter
             $this->deleteTempFile($tmpfname);
 
             $response = $this->normalizeResponse($response);
-            
+
             if (false === $response) {
                 return false;
             }
-            
+
             $this->setContentType($path, $contents);
         } catch (RuntimeException $exception) {
             $this->deleteTempFile($tmpfname);
@@ -180,8 +180,8 @@ class Adapter extends AbstractAdapter
 
         if (false === $response) {
             return false;
-        }        
-        
+        }
+
         $this->setContentType($path, stream_get_contents($resource));
 
         return $response;
@@ -273,7 +273,7 @@ class Adapter extends AbstractAdapter
     public function has($path)
     {
         try {
-            return (bool)$this->getMetadata($path);
+            return (bool) $this->getMetadata($path);
         } catch (RuntimeException $exception) {
             return false;
         }

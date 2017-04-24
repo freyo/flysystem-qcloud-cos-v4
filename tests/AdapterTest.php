@@ -11,15 +11,15 @@ class AdapterTest extends TestCase
     public function Provider()
     {
         $config = [
-            'protocol' => 'http',
-            'domain' => 'cosv4test-1252025751.file.myqcloud.com',
-            'app_id' => '1252025751',
-            'secret_id' => 'AKIDhCQN6arlcCUUDejykGVUEhuqVu5zqy4t',
+            'protocol'   => 'http',
+            'domain'     => 'cosv4test-1252025751.file.myqcloud.com',
+            'app_id'     => '1252025751',
+            'secret_id'  => 'AKIDhCQN6arlcCUUDejykGVUEhuqVu5zqy4t',
             'secret_key' => 'g5E8pFOH6fwvsYx6zbw1qPhiV3OSEjx0',
-            'timeout' => 60,
-            'bucket' => 'cosv4test',
-            'region' => 'gz',
-            'debug' => false,
+            'timeout'    => 60,
+            'bucket'     => 'cosv4test',
+            'region'     => 'gz',
+            'debug'      => false,
         ];
 
         $adapter = new Adapter($config);
@@ -34,8 +34,8 @@ class AdapterTest extends TestCase
      */
     public function testWrite($adapter)
     {
-        $this->assertTrue((bool)$adapter->write('foo/foo.md', 'content', new Config(['insertOnly' => 0])));
-        $this->assertFalse((bool)$adapter->write('foo/foo.md', uniqid(), new Config(['insertOnly' => 1])));
+        $this->assertTrue((bool) $adapter->write('foo/foo.md', 'content', new Config(['insertOnly' => 0])));
+        $this->assertFalse((bool) $adapter->write('foo/foo.md', uniqid(), new Config(['insertOnly' => 1])));
     }
 
     /**
@@ -44,38 +44,38 @@ class AdapterTest extends TestCase
     public function testWriteStream($adapter)
     {
         $temp = tmpfile();
-        fwrite($temp, "writing to tempfile");
-        $this->assertTrue((bool)$adapter->writeStream('foo/bar.md', $temp, new Config(['insertOnly' => 0])));
+        fwrite($temp, 'writing to tempfile');
+        $this->assertTrue((bool) $adapter->writeStream('foo/bar.md', $temp, new Config(['insertOnly' => 0])));
         fclose($temp);
-        
+
         $temp = tmpfile();
         fwrite($temp, uniqid());
-        $this->assertFalse((bool)$adapter->writeStream('foo/bar.md', $temp, new Config(['insertOnly' => 1])));
+        $this->assertFalse((bool) $adapter->writeStream('foo/bar.md', $temp, new Config(['insertOnly' => 1])));
         fclose($temp);
     }
-    
+
     /**
      * @dataProvider Provider
      */
     public function testUpdate($adapter)
     {
-        $this->assertTrue((bool)$adapter->update('foo/bar.md', uniqid(), new Config(['insertOnly' => 0])));
-        $this->assertFalse((bool)$adapter->update('foo/bar.md', uniqid(), new Config(['insertOnly' => 1])));
+        $this->assertTrue((bool) $adapter->update('foo/bar.md', uniqid(), new Config(['insertOnly' => 0])));
+        $this->assertFalse((bool) $adapter->update('foo/bar.md', uniqid(), new Config(['insertOnly' => 1])));
     }
-    
+
     /**
      * @dataProvider Provider
      */
     public function testUpdateStream($adapter)
     {
         $temp = tmpfile();
-        fwrite($temp, "writing to tempfile");
-        $this->assertTrue((bool)$adapter->updateStream('foo/bar.md', $temp, new Config(['insertOnly' => 0])));
+        fwrite($temp, 'writing to tempfile');
+        $this->assertTrue((bool) $adapter->updateStream('foo/bar.md', $temp, new Config(['insertOnly' => 0])));
         fclose($temp);
-        
+
         $temp = tmpfile();
         fwrite($temp, uniqid());
-        $this->assertFalse((bool)$adapter->updateStream('foo/bar.md', $temp, new Config(['insertOnly' => 1])));
+        $this->assertFalse((bool) $adapter->updateStream('foo/bar.md', $temp, new Config(['insertOnly' => 1])));
         fclose($temp);
     }
 
@@ -87,7 +87,7 @@ class AdapterTest extends TestCase
         $this->assertTrue($adapter->rename('foo/foo.md', 'foo/rename.md'));
         $this->assertFalse($adapter->rename('foo/notexist.md', 'foo/notexist.md'));
     }
-    
+
     /**
      * @dataProvider Provider
      */
@@ -105,14 +105,14 @@ class AdapterTest extends TestCase
         $this->assertTrue($adapter->delete('foo/rename.md'));
         $this->assertFalse($adapter->delete('foo/notexist.md'));
     }
-    
+
     /**
      * @dataProvider Provider
      */
     public function testCreateDir($adapter)
     {
-        $this->assertTrue((bool)$adapter->createDir('bar', new Config()));
-        $this->assertFalse((bool)$adapter->createDir('bar', new Config()));
+        $this->assertTrue((bool) $adapter->createDir('bar', new Config()));
+        $this->assertFalse((bool) $adapter->createDir('bar', new Config()));
     }
 
     /**
@@ -140,7 +140,7 @@ class AdapterTest extends TestCase
         $this->assertTrue($adapter->has('foo/bar.md'));
         $this->assertFalse($adapter->has('foo/noexist.md'));
     }
-    
+
     /**
      * @dataProvider Provider
      */
@@ -155,7 +155,7 @@ class AdapterTest extends TestCase
     public function testGetUrl($adapter, $config)
     {
         $this->assertSame(
-            $config['protocol'] . '://' . $config['domain'] . '/foo/bar.md',
+            $config['protocol'].'://'.$config['domain'].'/foo/bar.md',
             $adapter->getUrl('foo/bar.md')
         );
     }
@@ -194,7 +194,7 @@ class AdapterTest extends TestCase
     {
         $this->assertArrayHasKey('size', $adapter->getSize('foo/bar.md'));
     }
-    
+
     /**
      * @dataProvider Provider
      */
