@@ -37,9 +37,9 @@ class Adapter extends AbstractAdapter
         Conf::setSecretKey($config['secret_key']);
 
         $this->bucket = $config['bucket'];
-        $this->debug  = $config['debug'];
+        $this->debug = $config['debug'];
 
-        $this->setPathPrefix($config['protocol'] . '://' . $config['domain'] . '/');
+        $this->setPathPrefix($config['protocol'].'://'.$config['domain'].'/');
 
         Cosapi::setTimeout($config['timeout']);
         Cosapi::setRegion($config['region']);
@@ -273,7 +273,7 @@ class Adapter extends AbstractAdapter
     public function has($path)
     {
         try {
-            return (bool)$this->getMetadata($path);
+            return (bool) $this->getMetadata($path);
         } catch (RuntimeException $exception) {
             return false;
         }
