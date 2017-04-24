@@ -273,7 +273,7 @@ class Adapter extends AbstractAdapter
     public function has($path)
     {
         try {
-            return (bool) $this->getMetadata($path);
+            return (bool)$this->getMetadata($path);
         } catch (RuntimeException $exception) {
             return false;
         }
@@ -381,13 +381,17 @@ class Adapter extends AbstractAdapter
     {
         $stat = $this->getMetadata($path);
 
-        $visibility = AdapterInterface::VISIBILITY_PRIVATE;
+        if ($stat && isset($stat['authority'])) {
+            if ($stat['authority'] === 'eWPrivateRPublic') {
+                return ['visibility' => AdapterInterface::VISIBILITY_PUBLIC];
+            }
 
-        if ($stat && $stat['authority'] === 'eWPrivateRPublic') {
-            $visibility = AdapterInterface::VISIBILITY_PUBLIC;
+            if ($stat['authority'] === 'eWPrivateRPublic') {
+                return ['visibility' => AdapterInterface::VISIBILITY_PRIVATE];
+            }
         }
 
-        return ['visibility' => $visibility];
+        return false;
     }
 
     /**
