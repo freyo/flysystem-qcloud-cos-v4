@@ -70,7 +70,7 @@ class Adapter extends AbstractAdapter
      *
      * @throws RuntimeException
      *
-     * @return bool
+     * @return array|bool
      */
     public function write($path, $contents, Config $config)
     {
@@ -95,7 +95,7 @@ class Adapter extends AbstractAdapter
             throw $exception;
         }
 
-        return (bool) $response;
+        return $response;
     }
 
     /**
@@ -105,7 +105,7 @@ class Adapter extends AbstractAdapter
      *
      * @throws RuntimeException
      *
-     * @return bool
+     * @return array|bool
      */
     public function writeStream($path, $resource, Config $config)
     {
@@ -122,7 +122,7 @@ class Adapter extends AbstractAdapter
 
         $this->setContentType($path, stream_get_contents($resource));
 
-        return (bool) $response;
+        return $response;
     }
 
     /**
@@ -132,7 +132,7 @@ class Adapter extends AbstractAdapter
      *
      * @throws RuntimeException
      *
-     * @return bool
+     * @return array|bool
      */
     public function update($path, $contents, Config $config)
     {
@@ -157,7 +157,7 @@ class Adapter extends AbstractAdapter
             throw $exception;
         }
 
-        return (bool) $response;
+        return $response;
     }
 
     /**
@@ -167,7 +167,7 @@ class Adapter extends AbstractAdapter
      *
      * @throws RuntimeException
      *
-     * @return bool
+     * @return array|bool
      */
     public function updateStream($path, $resource, Config $config)
     {
@@ -184,7 +184,7 @@ class Adapter extends AbstractAdapter
 
         $this->setContentType($path, stream_get_contents($resource));
 
-        return (bool) $response;
+        return $response;
     }
 
     /**
@@ -333,7 +333,7 @@ class Adapter extends AbstractAdapter
     {
         $stat = $this->getMetadata($path);
 
-        if ($stat && isset($stat['filesize'])) {
+        if (isset($stat['filesize'])) {
             return ['size' => $stat['filesize']];
         }
 
@@ -349,7 +349,7 @@ class Adapter extends AbstractAdapter
     {
         $stat = $this->getMetadata($path);
 
-        if ($stat && isset($stat['custom_headers']) && isset($stat['custom_headers']['Content-Type'])) {
+        if (isset($stat['custom_headers']['Content-Type'])) {
             return ['mimetype' => $stat['custom_headers']['Content-Type']];
         }
 
@@ -365,7 +365,7 @@ class Adapter extends AbstractAdapter
     {
         $stat = $this->getMetadata($path);
 
-        if ($stat && isset($stat['ctime'])) {
+        if (isset($stat['ctime'])) {
             return ['timestamp' => $stat['ctime']];
         }
 
@@ -381,15 +381,13 @@ class Adapter extends AbstractAdapter
     {
         $stat = $this->getMetadata($path);
 
-        if ($stat && isset($stat['authority'])) {
-            if ($stat['authority'] === 'eWPrivateRPublic') {
-                return ['visibility' => AdapterInterface::VISIBILITY_PUBLIC];
-            }
+		if (isset($stat['authority']) && $stat['authority'] === 'eWPrivateRPublic') {
+			return ['visibility' => AdapterInterface::VISIBILITY_PUBLIC];
+		}
 
-            if ($stat['authority'] === 'eWPrivateRPublic') {
-                return ['visibility' => AdapterInterface::VISIBILITY_PRIVATE];
-            }
-        }
+		if (isset($stat['authority']) && $stat['authority'] === 'eWPrivateRPublic') {
+			return ['visibility' => AdapterInterface::VISIBILITY_PRIVATE];
+		}
 
         return false;
     }
