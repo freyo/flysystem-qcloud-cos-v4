@@ -78,7 +78,7 @@ class Adapter extends AbstractAdapter
 
         try {
             $response = Cosapi::upload($this->getBucket(), $tmpfname, $path,
-                    null, null, $config->get('insertOnly', 1));
+                                       null, null, $config->get('insertOnly', 1));
 
             $this->deleteTempFile($tmpfname);
 
@@ -87,7 +87,7 @@ class Adapter extends AbstractAdapter
             if (false === $response) {
                 return false;
             }
-            
+
             $this->setContentType($path, $contents);
         } catch (RuntimeException $exception) {
             $this->deleteTempFile($tmpfname);
@@ -112,14 +112,14 @@ class Adapter extends AbstractAdapter
         $uri = stream_get_meta_data($resource)['uri'];
 
         $response = Cosapi::upload($this->getBucket(), $uri, $path,
-                null, null, $config->get('insertOnly', 1));
+                                   null, null, $config->get('insertOnly', 1));
 
         $response = $this->normalizeResponse($response);
 
         if (false === $response) {
             return false;
-        }        
-        
+        }
+
         $this->setContentType($path, stream_get_contents($resource));
 
         return $response;
@@ -140,16 +140,16 @@ class Adapter extends AbstractAdapter
 
         try {
             $response = Cosapi::upload($this->getBucket(), $tmpfname, $path,
-                    null, null, $config->get('insertOnly', 0));
+                                       null, null, $config->get('insertOnly', 0));
 
             $this->deleteTempFile($tmpfname);
 
             $response = $this->normalizeResponse($response);
-            
+
             if (false === $response) {
                 return false;
             }
-            
+
             $this->setContentType($path, $contents);
         } catch (RuntimeException $exception) {
             $this->deleteTempFile($tmpfname);
@@ -174,14 +174,14 @@ class Adapter extends AbstractAdapter
         $uri = stream_get_meta_data($resource)['uri'];
 
         $response = Cosapi::upload($this->getBucket(), $uri, $path,
-                null, null, $config->get('insertOnly', 0));
+                                   null, null, $config->get('insertOnly', 0));
 
         $response = $this->normalizeResponse($response);
 
         if (false === $response) {
             return false;
-        }        
-        
+        }
+
         $this->setContentType($path, stream_get_contents($resource));
 
         return $response;
