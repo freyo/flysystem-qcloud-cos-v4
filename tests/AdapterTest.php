@@ -11,15 +11,15 @@ class AdapterTest extends TestCase
     public function Provider()
     {
         $config = [
-            'protocol' => 'http',
-            'domain' => 'your-domain',
-            'app_id' => 'your-app-id',
-            'secret_id' => 'your-secret-id',
+            'protocol'   => 'http',
+            'domain'     => 'your-domain',
+            'app_id'     => 'your-app-id',
+            'secret_id'  => 'your-secret-id',
             'secret_key' => 'your-secret-key',
-            'timeout' => 60,
-            'bucket' => 'your-bucket-name',
-            'region' => 'gz',
-            'debug' => true,
+            'timeout'    => 60,
+            'bucket'     => 'your-bucket-name',
+            'region'     => 'gz',
+            'debug'      => true,
         ];
 
         $adapter = new Adapter($config);
@@ -48,13 +48,13 @@ class AdapterTest extends TestCase
         //fwrite($temp, "writing to tempfile");
         //$this->assertTrue((bool)$adapter->writeStream('foo/bar.md', $temp, new Config(['insertOnly' => 0])));
         //fclose($temp);
-        
+
         $temp = tmpfile();
         fwrite($temp, uniqid());
-        $this->assertFalse((bool)$adapter->writeStream('foo/bar.md', $temp, new Config(['insertOnly' => 1])));
+        $this->assertFalse((bool) $adapter->writeStream('foo/bar.md', $temp, new Config(['insertOnly' => 1])));
         fclose($temp);
     }
-    
+
     /**
      * @dataProvider Provider
      */
@@ -63,7 +63,7 @@ class AdapterTest extends TestCase
         //$this->assertTrue((bool)$adapter->update('foo/bar.md', uniqid(), new Config(['insertOnly' => 0])));
         //$this->assertFalse((bool)$adapter->update('foo/bar.md', uniqid(), new Config(['insertOnly' => 1])));
     }
-    
+
     /**
      * @dataProvider Provider
      * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
@@ -71,13 +71,13 @@ class AdapterTest extends TestCase
     public function testUpdateStream($adapter)
     {
         $temp = tmpfile();
-        fwrite($temp, "writing to tempfile");
-        $this->assertTrue((bool)$adapter->updateStream('foo/bar.md', $temp, new Config(['insertOnly' => 0])));
+        fwrite($temp, 'writing to tempfile');
+        $this->assertTrue((bool) $adapter->updateStream('foo/bar.md', $temp, new Config(['insertOnly' => 0])));
         fclose($temp);
-        
+
         $temp = tmpfile();
         fwrite($temp, uniqid());
-        $this->assertFalse((bool)$adapter->updateStream('foo/bar.md', $temp, new Config(['insertOnly' => 1])));
+        $this->assertFalse((bool) $adapter->updateStream('foo/bar.md', $temp, new Config(['insertOnly' => 1])));
         fclose($temp);
     }
 
@@ -90,7 +90,7 @@ class AdapterTest extends TestCase
         $this->assertTrue($adapter->rename('foo/foo.md', 'foo/rename.md'));
         $this->assertFalse($adapter->rename('foo/notexist.md', 'foo/notexist.md'));
     }
-    
+
     /**
      * @dataProvider Provider
      * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
@@ -110,15 +110,15 @@ class AdapterTest extends TestCase
         $this->assertTrue($adapter->delete('foo/rename.md'));
         $this->assertFalse($adapter->delete('foo/notexist.md'));
     }
-    
+
     /**
      * @dataProvider Provider
      * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
      */
     public function testCreateDir($adapter)
     {
-        $this->assertTrue((bool)$adapter->createDir('bar', new Config()));
-        $this->assertFalse((bool)$adapter->createDir('bar', new Config()));
+        $this->assertTrue((bool) $adapter->createDir('bar', new Config()));
+        $this->assertFalse((bool) $adapter->createDir('bar', new Config()));
     }
 
     /**
@@ -148,7 +148,7 @@ class AdapterTest extends TestCase
         //$this->assertTrue($adapter->has('foo/bar.md'));
         $this->assertFalse($adapter->has('foo/noexist.md'));
     }
-    
+
     /**
      * @dataProvider Provider
      */
@@ -163,7 +163,7 @@ class AdapterTest extends TestCase
     public function testGetUrl($adapter, $config)
     {
         $this->assertSame(
-            $config['protocol'] . '://' . $config['domain'] . '/foo/bar.md',
+            $config['protocol'].'://'.$config['domain'].'/foo/bar.md',
             $adapter->getUrl('foo/bar.md')
         );
     }
@@ -205,7 +205,7 @@ class AdapterTest extends TestCase
     {
         $this->assertArrayHasKey('size', $adapter->getSize('foo/bar.md'));
     }
-    
+
     /**
      * @dataProvider Provider
      * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
