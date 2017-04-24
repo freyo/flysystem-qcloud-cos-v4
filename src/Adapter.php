@@ -95,7 +95,7 @@ class Adapter extends AbstractAdapter
             throw $exception;
         }
 
-        return (bool)$response;
+        return (bool) $response;
     }
 
     /**
@@ -122,7 +122,7 @@ class Adapter extends AbstractAdapter
 
         $this->setContentType($path, stream_get_contents($resource));
 
-        return (bool)$response;
+        return (bool) $response;
     }
 
     /**
@@ -157,7 +157,7 @@ class Adapter extends AbstractAdapter
             throw $exception;
         }
 
-        return (bool)$response;
+        return (bool) $response;
     }
 
     /**
@@ -184,7 +184,7 @@ class Adapter extends AbstractAdapter
 
         $this->setContentType($path, stream_get_contents($resource));
 
-        return (bool)$response;
+        return (bool) $response;
     }
 
     /**
@@ -195,7 +195,7 @@ class Adapter extends AbstractAdapter
      */
     public function rename($path, $newpath)
     {
-        return (bool)$this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             Cosapi::moveFile($this->getBucket(), $path, $newpath, 1)
         );
     }
@@ -208,7 +208,7 @@ class Adapter extends AbstractAdapter
      */
     public function copy($path, $newpath)
     {
-        return (bool)$this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             Cosapi::copyFile($this->getBucket(), $path, $newpath, 1)
         );
     }
@@ -220,7 +220,7 @@ class Adapter extends AbstractAdapter
      */
     public function delete($path)
     {
-        return (bool)$this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             Cosapi::delFile($this->getBucket(), $path)
         );
     }
@@ -232,7 +232,7 @@ class Adapter extends AbstractAdapter
      */
     public function deleteDir($dirname)
     {
-        return (bool)$this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             Cosapi::delFolder($this->getBucket(), $dirname)
         );
     }
@@ -245,7 +245,7 @@ class Adapter extends AbstractAdapter
      */
     public function createDir($dirname, Config $config)
     {
-        return (bool)$this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             Cosapi::createFolder($this->getBucket(), $dirname)
         );
     }
@@ -260,7 +260,7 @@ class Adapter extends AbstractAdapter
     {
         $visibility = $visibility === AdapterInterface::VISIBILITY_PUBLIC ? 'eWPrivateRPublic' : 'eWRPrivate';
 
-        return (bool)$this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             Cosapi::update($this->getBucket(), $path, null, $visibility)
         );
     }
@@ -273,7 +273,7 @@ class Adapter extends AbstractAdapter
     public function has($path)
     {
         try {
-            return (bool)$this->getMetadata($path);
+            return (bool) $this->getMetadata($path);
         } catch (RuntimeException $exception) {
             return false;
         }
