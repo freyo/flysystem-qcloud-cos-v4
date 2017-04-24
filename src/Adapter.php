@@ -381,13 +381,13 @@ class Adapter extends AbstractAdapter
     {
         $stat = $this->getMetadata($path);
 
-		if (isset($stat['authority']) && $stat['authority'] === 'eWPrivateRPublic') {
-			return ['visibility' => AdapterInterface::VISIBILITY_PUBLIC];
-		}
+        if (isset($stat['authority']) && $stat['authority'] === 'eWPrivateRPublic') {
+            return ['visibility' => AdapterInterface::VISIBILITY_PUBLIC];
+        }
 
-		if (isset($stat['authority']) && $stat['authority'] === 'eWPrivateRPublic') {
-			return ['visibility' => AdapterInterface::VISIBILITY_PRIVATE];
-		}
+        if (isset($stat['authority']) && $stat['authority'] === 'eWPrivateRPublic') {
+            return ['visibility' => AdapterInterface::VISIBILITY_PRIVATE];
+        }
 
         return false;
     }
