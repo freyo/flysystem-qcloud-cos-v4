@@ -70,7 +70,7 @@ class Adapter extends AbstractAdapter
      *
      * @throws RuntimeException
      *
-     * @return array|false
+     * @return array|bool
      */
     public function write($path, $contents, Config $config)
     {
@@ -105,7 +105,7 @@ class Adapter extends AbstractAdapter
      *
      * @throws RuntimeException
      *
-     * @return array|false
+     * @return array|bool
      */
     public function writeStream($path, $resource, Config $config)
     {
@@ -132,7 +132,7 @@ class Adapter extends AbstractAdapter
      *
      * @throws RuntimeException
      *
-     * @return array|false
+     * @return array|bool
      */
     public function update($path, $contents, Config $config)
     {
@@ -167,7 +167,7 @@ class Adapter extends AbstractAdapter
      *
      * @throws RuntimeException
      *
-     * @return array|false
+     * @return array|bool
      */
     public function updateStream($path, $resource, Config $config)
     {
@@ -195,7 +195,7 @@ class Adapter extends AbstractAdapter
      */
     public function rename($path, $newpath)
     {
-        return $this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             Cosapi::moveFile($this->getBucket(), $path, $newpath, 1)
         );
     }
@@ -208,7 +208,7 @@ class Adapter extends AbstractAdapter
      */
     public function copy($path, $newpath)
     {
-        return $this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             Cosapi::copyFile($this->getBucket(), $path, $newpath, 1)
         );
     }
@@ -220,7 +220,7 @@ class Adapter extends AbstractAdapter
      */
     public function delete($path)
     {
-        return $this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             Cosapi::delFile($this->getBucket(), $path)
         );
     }
@@ -232,7 +232,7 @@ class Adapter extends AbstractAdapter
      */
     public function deleteDir($dirname)
     {
-        return $this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             Cosapi::delFolder($this->getBucket(), $dirname)
         );
     }
@@ -245,7 +245,7 @@ class Adapter extends AbstractAdapter
      */
     public function createDir($dirname, Config $config)
     {
-        return $this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             Cosapi::createFolder($this->getBucket(), $dirname)
         );
     }
@@ -260,7 +260,7 @@ class Adapter extends AbstractAdapter
     {
         $visibility = $visibility === AdapterInterface::VISIBILITY_PUBLIC ? 'eWPrivateRPublic' : 'eWRPrivate';
 
-        return $this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             Cosapi::update($this->getBucket(), $path, null, $visibility)
         );
     }
@@ -327,73 +327,75 @@ class Adapter extends AbstractAdapter
     /**
      * @param string $path
      *
-     * @return array
+     * @return array|bool
      */
     public function getSize($path)
     {
         $stat = $this->getMetadata($path);
 
-        if ($stat) {
+        if (isset($stat['filesize'])) {
             return ['size' => $stat['filesize']];
         }
 
-        return ['size' => 0];
+        return false;
     }
 
     /**
      * @param string $path
      *
-     * @return array
+     * @return array|bool
      */
     public function getMimetype($path)
     {
         $stat = $this->getMetadata($path);
 
-        if ($stat && !empty($stat['custom_headers']) && !empty($stat['custom_headers']['Content-Type'])) {
+        if (isset($stat['custom_headers']['Content-Type'])) {
             return ['mimetype' => $stat['custom_headers']['Content-Type']];
         }
 
-        return ['mimetype' => ''];
+        return false;
     }
 
     /**
      * @param string $path
      *
-     * @return array
+     * @return array|bool
      */
     public function getTimestamp($path)
     {
         $stat = $this->getMetadata($path);
 
-        if ($stat) {
+        if (isset($stat['ctime'])) {
             return ['timestamp' => $stat['ctime']];
         }
 
-        return ['timestamp' => 0];
+        return false;
     }
 
     /**
      * @param string $path
      *
-     * @return array
+     * @return array|bool
      */
     public function getVisibility($path)
     {
         $stat = $this->getMetadata($path);
 
-        $visibility = AdapterInterface::VISIBILITY_PRIVATE;
-
-        if ($stat && $stat['authority'] === 'eWPrivateRPublic') {
-            $visibility = AdapterInterface::VISIBILITY_PUBLIC;
+        if (isset($stat['authority']) && $stat['authority'] === 'eWPrivateRPublic') {
+            return ['visibility' => AdapterInterface::VISIBILITY_PUBLIC];
         }
 
-        return ['visibility' => $visibility];
+        if (isset($stat['authority']) && $stat['authority'] === 'eWPrivateRPublic') {
+            return ['visibility' => AdapterInterface::VISIBILITY_PRIVATE];
+        }
+
+        return false;
     }
 
     /**
      * @param $content
      *
-     * @return string|false
+     * @return string|bool
      */
     private function writeTempFile($content)
     {
