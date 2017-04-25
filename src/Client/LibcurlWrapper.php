@@ -70,26 +70,14 @@ class LibcurlWrapper
         for (; ;) {
             $active = null;
 
-            do {
-                $mrc = curl_multi_exec($this->curlMultiHandle, $active);
-                $info = curl_multi_info_read($this->curlMultiHandle);
-                if ($info !== false) {
-                    $this->processResult($info);
-                }
-            } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+            $mrc = $this->doCurlMulti();
 
             while ($active && $mrc == CURLM_OK) {
                 if (curl_multi_select($this->curlMultiHandle) == -1) {
                     usleep(1);
                 }
 
-                do {
-                    $mrc = curl_multi_exec($this->curlMultiHandle, $active);
-                    $info = curl_multi_info_read($this->curlMultiHandle);
-                    if ($info !== false) {
-                        $this->processResult($info);
-                    }
-                } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+                $this->doCurlMulti();
             }
 
             if (count($this->curlHandleInfo) == 0) {
@@ -154,5 +142,18 @@ class LibcurlWrapper
         } else {
             LibcurlHelper::my_curl_reset($handle);
         }
+    }
+
+    private function doCurlMulti()
+    {
+        do {
+            $mrc = curl_multi_exec($this->curlMultiHandle, $active);
+            $info = curl_multi_info_read($this->curlMultiHandle);
+            if ($info !== false) {
+                $this->processResult($info);
+            }
+        } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+
+        return $mrc;
     }
 }

@@ -493,7 +493,7 @@ class Cosapi
         $bucket, $path, $bizAttr = null, $authority = null, $custom_headers_array = null)
     {
         $path = self::cosUrlEncode($path);
-        //$expired = time() + self::EXPIRED_SECONDS;
+
         $url       = self::generateResUrl($bucket, $path);
         $signature = Auth::createNonreusableSignature($bucket, $path);
 
@@ -534,10 +534,13 @@ class Cosapi
         return self::sendRequest($req);
     }
 
-    /*
+    /**
      * 内部方法
-     * @param  string  $bucket  bucket名称
-     * @param  string  $path        文件/目录路径
+     *
+     * @param  string $bucket bucket名称
+     * @param  string $path   文件/目录路径
+     *
+     * @return array
      */
     private static function statBase($bucket, $path)
     {
@@ -580,7 +583,7 @@ class Cosapi
         }
 
         $path = self::cosUrlEncode($path);
-        //$expired = time() + self::EXPIRED_SECONDS;
+
         $url       = self::generateResUrl($bucket, $path);
         $signature = Auth::createNonreusableSignature($bucket, $path);
 
@@ -647,7 +650,6 @@ class Cosapi
             ];
         }
 
-        //$info = HttpClient::info();
         $ret = json_decode($rsp, true);
 
         if ($ret === null) {
@@ -707,7 +709,7 @@ class Cosapi
             $path = '/' . $path;
         }
 
-        if ($isfolder == true) {
+        if ($isfolder === true) {
             if (preg_match('/\/$/', $path) == 0) {
                 $path = $path . '/';
             }

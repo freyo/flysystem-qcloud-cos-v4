@@ -78,19 +78,11 @@ class HttpClient
             curl_setopt(self::$curlHandler, CURLOPT_SSL_VERIFYPEER, true);
             curl_setopt(self::$curlHandler, CURLOPT_CAINFO, $request['cert']);
             curl_setopt(self::$curlHandler, CURLOPT_SSL_VERIFYHOST, 2);
-            if (isset($request['ssl_version'])) {
-                curl_setopt(self::$curlHandler, CURLOPT_SSLVERSION, $request['ssl_version']);
-            } else {
-                curl_setopt(self::$curlHandler, CURLOPT_SSLVERSION, 4);
-            }
+            self::setCurlSSLVersion($request);
         } elseif ($ssl) {
             curl_setopt(self::$curlHandler, CURLOPT_SSL_VERIFYPEER, false);   //true any ca
             curl_setopt(self::$curlHandler, CURLOPT_SSL_VERIFYHOST, 1);       //check only host
-            if (isset($request['ssl_version'])) {
-                curl_setopt(self::$curlHandler, CURLOPT_SSLVERSION, $request['ssl_version']);
-            } else {
-                curl_setopt(self::$curlHandler, CURLOPT_SSLVERSION, 4);
-            }
+            self::setCurlSSLVersion($request);
         }
         $ret = curl_exec(self::$curlHandler);
         self::$httpInfo = curl_getinfo(self::$curlHandler);
@@ -101,5 +93,14 @@ class HttpClient
     public static function info()
     {
         return self::$httpInfo;
+    }
+
+    private static function setCurlSSLVersion($request)
+    {
+        if (isset($request['ssl_version'])) {
+            curl_setopt(self::$curlHandler, CURLOPT_SSLVERSION, $request['ssl_version']);
+        } else {
+            curl_setopt(self::$curlHandler, CURLOPT_SSLVERSION, 4);
+        }
     }
 }
