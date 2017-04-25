@@ -385,7 +385,7 @@ class Adapter extends AbstractAdapter
             return ['visibility' => AdapterInterface::VISIBILITY_PUBLIC];
         }
 
-        if (isset($stat['authority']) && $stat['authority'] === 'eWPrivateRPublic') {
+        if (isset($stat['authority']) && $stat['authority'] === 'eWRPrivate') {
             return ['visibility' => AdapterInterface::VISIBILITY_PRIVATE];
         }
 
@@ -409,7 +409,7 @@ class Adapter extends AbstractAdapter
     }
 
     /**
-     * @param string|bool $tmpfname
+     * @param string|boolean $tmpfname
      *
      * @return bool
      */
