@@ -67,7 +67,7 @@ class LibcurlWrapper
 
     public function performSendingRequest()
     {
-        for (;;) {
+        for (; ;) {
             $active = null;
 
             $mrc = $this->doCurlMulti();

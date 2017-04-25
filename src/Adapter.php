@@ -409,7 +409,7 @@ class Adapter extends AbstractAdapter
     }
 
     /**
-     * @param string|boolean $tmpfname
+     * @param string|bool $tmpfname
      *
      * @return bool
      */
