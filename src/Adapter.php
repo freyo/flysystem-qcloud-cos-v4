@@ -54,7 +54,7 @@ class Adapter extends AbstractAdapter
     }
 
     /**
-     * @param $path
+     * @param string $path
      *
      * @return string
      */
@@ -393,7 +393,7 @@ class Adapter extends AbstractAdapter
     }
 
     /**
-     * @param $content
+     * @param string $content
      *
      * @return string|bool
      */
@@ -409,7 +409,7 @@ class Adapter extends AbstractAdapter
     }
 
     /**
-     * @param $tmpfname
+     * @param string|boolean $tmpfname
      *
      * @return bool
      */
@@ -419,8 +419,8 @@ class Adapter extends AbstractAdapter
     }
 
     /**
-     * @param $path
-     * @param $content
+     * @param string $path
+     * @param string $content
      *
      * @return bool
      */
