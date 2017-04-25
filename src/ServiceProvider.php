@@ -25,7 +25,7 @@ class ServiceProvider extends LaravelServiceProvider
             __DIR__.'/filesystems.php' => config_path('filesystems.php'),
         ]);
 
-        Storage::extend('cosv4', function($app, $config) {
+        Storage::extend('cosv4', function ($app, $config) {
             return new Filesystem(new Adapter($config));
         });
 
