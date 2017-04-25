@@ -241,11 +241,11 @@ class Adapter extends AbstractAdapter
      * @param string $dirname
      * @param Config $config
      *
-     * @return bool
+     * @return array|bool
      */
     public function createDir($dirname, Config $config)
     {
-        return (bool) $this->normalizeResponse(
+        return $this->normalizeResponse(
             Cosapi::createFolder($this->getBucket(), $dirname)
         );
     }
@@ -415,6 +415,10 @@ class Adapter extends AbstractAdapter
      */
     private function deleteTempFile($tmpfname)
     {
+        if (false === $tmpfname) {
+            return false;
+        }
+
         return unlink($tmpfname);
     }
 

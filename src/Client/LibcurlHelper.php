@@ -9,7 +9,7 @@ class LibcurlHelper
      *
      * @param $fields array of key -> value fields to post.
      *
-     * @return $boundary and encoded post fields.
+     * @return array $boundary and encoded post fields.
      */
     public static function buildCustomPostFields($fields)
     {
@@ -49,6 +49,8 @@ class LibcurlHelper
 
     /**
      * Reset options of a libcurl session handle.
+     *
+     * @param $handler
      */
     public static function my_curl_reset($handler)
     {

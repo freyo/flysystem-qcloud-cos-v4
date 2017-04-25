@@ -17,12 +17,14 @@ class Cosapi
 
     //HTTP请求超时时间
     private static $timeout = 60;
-    private static $region = 'gz'; // default region is guangzou
+    private static $region  = 'gz'; // default region is guangzou
 
     /**
      * 设置HTTP请求超时时间.
      *
      * @param int $timeout 超时时长
+     *
+     * @return bool
      */
     public static function setTimeout($timeout = 60)
     {
@@ -47,18 +49,17 @@ class Cosapi
      * @param string $srcPath    本地文件路径
      * @param string $dstPath    上传的文件路径
      * @param string $bizAttr    文件属性
-     * @param string $slicesize  分片大小(512k,1m,2m,3m)，默认:1m
+     * @param string $sliceSize  分片大小(512k,1m,2m,3m)，默认:1m
      * @param string $insertOnly 同名文件是否覆盖
      *
-     * @return [type] [description]
+     * @return array
      */
-    public static function upload(
-        $bucket, $srcPath, $dstPath, $bizAttr = null, $sliceSize = null, $insertOnly = null)
+    public static function upload($bucket, $srcPath, $dstPath, $bizAttr = null, $sliceSize = null, $insertOnly = null)
     {
         if (!file_exists($srcPath)) {
             return [
                 'code'    => ErrorCode::COSAPI_PARAMS_ERROR,
-                'message' => 'file '.$srcPath.' not exists',
+                'message' => 'file ' . $srcPath . ' not exists',
                 'data'    => [],
             ];
         }
@@ -75,26 +76,29 @@ class Cosapi
         }
     }
 
-    /*
+    /**
      * 创建目录
-     * @param  string  $bucket bucket名称
-     * @param  string  $folder       目录路径
-     * @param  string  $bizAttr    目录属性
+     *
+     * @param  string $bucket  bucket名称
+     * @param  string $folder  目录路径
+     * @param  string $bizAttr 目录属性
+     *
+     * @return array
      */
     public static function createFolder($bucket, $folder, $bizAttr = null)
     {
         if (!self::isValidPath($folder)) {
             return [
                 'code'    => ErrorCode::COSAPI_PARAMS_ERROR,
-                'message' => 'folder '.$folder.' is not a valid folder name',
+                'message' => 'folder ' . $folder . ' is not a valid folder name',
                 'data'    => [],
             ];
         }
 
-        $folder = self::normalizerPath($folder, true);
-        $folder = self::cosUrlEncode($folder);
-        $expired = time() + self::EXPIRED_SECONDS;
-        $url = self::generateResUrl($bucket, $folder);
+        $folder    = self::normalizerPath($folder, true);
+        $folder    = self::cosUrlEncode($folder);
+        $expired   = time() + self::EXPIRED_SECONDS;
+        $url       = self::generateResUrl($bucket, $folder);
         $signature = Auth::createReusableSignature($expired, $bucket);
 
         $data = [
@@ -110,7 +114,7 @@ class Cosapi
             'timeout' => self::$timeout,
             'data'    => $data,
             'header'  => [
-                'Authorization: '.$signature,
+                'Authorization: ' . $signature,
                 'Content-Type: application/json',
             ],
         ];
@@ -118,49 +122,52 @@ class Cosapi
         return self::sendRequest($req);
     }
 
-    /*
+    /**
      * 目录列表
-     * @param  string  $bucket bucket名称
-     * @param  string  $path     目录路径，sdk会补齐末尾的 '/'
-     * @param  int     $num      拉取的总数
-     * @param  string  $pattern  eListBoth,ListDirOnly,eListFileOnly  默认both
-     * @param  int     $order    默认正序(=0), 填1为反序,
-     * @param  string  $offset   透传字段,用于翻页,前端不需理解,需要往前/往后翻页则透传回来
+     *
+     * @param  string $bucket  bucket名称
+     * @param  string $folder  目录路径，sdk会补齐末尾的 '/'
+     * @param  int    $num     拉取的总数
+     * @param  string $pattern eListBoth,ListDirOnly,eListFileOnly  默认both
+     * @param  int    $order   默认正序(=0), 填1为反序,
+     * @param  string $context 透传字段,用于翻页,前端不需理解,需要往前/往后翻页则透传回来
+     *
+     * @return array
      */
-    public static function listFolder(
-        $bucket, $folder, $num = 20,
-        $pattern = 'eListBoth', $order = 0,
-        $context = null)
+    public static function listFolder($bucket, $folder, $num = 20, $pattern = 'eListBoth', $order = 0, $context = null)
     {
         $folder = self::normalizerPath($folder, true);
 
         return self::listBase($bucket, $folder, $num, $pattern, $order, $context);
     }
 
-    /*
+    /**
      * 目录列表(前缀搜索)
-     * @param  string  $bucket bucket名称
-     * @param  string  $prefix   列出含此前缀的所有文件
-     * @param  int     $num      拉取的总数
-     * @param  string  $pattern  eListBoth(默认),ListDirOnly,eListFileOnly
-     * @param  int     $order    默认正序(=0), 填1为反序,
-     * @param  string  $offset   透传字段,用于翻页,前端不需理解,需要往前/往后翻页则透传回来
+     *
+     * @param  string $bucket  bucket名称
+     * @param  string $prefix  列出含此前缀的所有文件
+     * @param  int    $num     拉取的总数
+     * @param  string $pattern eListBoth(默认),ListDirOnly,eListFileOnly
+     * @param  int    $order   默认正序(=0), 填1为反序,
+     * @param  string $context 透传字段,用于翻页,前端不需理解,需要往前/往后翻页则透传回来
+     *
+     * @return array
      */
-    public static function prefixSearch(
-        $bucket, $prefix, $num = 20,
-        $pattern = 'eListBoth', $order = 0,
-        $context = null)
+    public static function prefixSearch($bucket, $prefix, $num = 20, $pattern = 'eListBoth', $order = 0, $context = null)
     {
         $path = self::normalizerPath($prefix);
 
-        return self::listBase($bucket, $prefix, $num, $pattern, $order, $context);
+        return self::listBase($bucket, $path, $num, $pattern, $order, $context);
     }
 
-    /*
+    /**
      * 目录更新
-     * @param  string  $bucket bucket名称
-     * @param  string  $folder      文件夹路径,SDK会补齐末尾的 '/'
-     * @param  string  $bizAttr   目录属性
+     *
+     * @param  string $bucket  bucket名称
+     * @param  string $folder  文件夹路径,SDK会补齐末尾的 '/'
+     * @param  string $bizAttr 目录属性
+     *
+     * @return array
      */
     public static function updateFolder($bucket, $folder, $bizAttr = null)
     {
@@ -169,11 +176,14 @@ class Cosapi
         return self::updateBase($bucket, $folder, $bizAttr);
     }
 
-    /*
-      * 查询目录信息
-      * @param  string  $bucket bucket名称
-      * @param  string  $folder       目录路径
-      */
+    /**
+     * 查询目录信息
+     *
+     * @param  string $bucket bucket名称
+     * @param  string $folder 目录路径
+     *
+     * @return array
+     */
     public static function statFolder($bucket, $folder)
     {
         $folder = self::normalizerPath($folder, true);
@@ -181,18 +191,21 @@ class Cosapi
         return self::statBase($bucket, $folder);
     }
 
-    /*
+    /**
      * 删除目录
-     * @param  string  $bucket bucket名称
-     * @param  string  $folder       目录路径
-     *  注意不能删除bucket下根目录/
+     *
+     * @param  string $bucket bucket名称
+     * @param  string $folder 目录路径
+     *                        注意不能删除bucket下根目录/
+     *
+     * @return array
      */
     public static function delFolder($bucket, $folder)
     {
         if (empty($bucket) || empty($folder)) {
             return [
                 'code'    => ErrorCode::COSAPI_PARAMS_ERROR,
-                'message' => 'bucket or path is empty', ];
+                'message' => 'bucket or path is empty',];
         }
 
         $folder = self::normalizerPath($folder, true);
@@ -200,30 +213,36 @@ class Cosapi
         return self::delBase($bucket, $folder);
     }
 
-    /*
+    /**
      * 更新文件
-     * @param  string  $bucket  bucket名称
-     * @param  string  $path        文件路径
-     * @param  string  $authority:  eInvalid(继承Bucket的读写权限)/eWRPrivate(私有读写)/eWPrivateRPublic(公有读私有写)
-     * @param  array   $customer_headers_array 携带的用户自定义头域,包括
-     * 'Cache-Control' => '*'
-     * 'Content-Type' => '*'
-     * 'Content-Disposition' => '*'
-     * 'Content-Language' => '*'
-     * 'x-cos-meta-自定义内容' => '*'
+     *
+     * @param  string $bucket                 bucket名称
+     * @param  string $path                   文件路径
+     * @param  null   $bizAttr
+     * @param  string $authority              eInvalid(继承Bucket的读写权限)/eWRPrivate(私有读写)/eWPrivateRPublic(公有读私有写)
+     * @param  array  $customer_headers_array 携带的用户自定义头域,包括
+     *                                        'Cache-Control' => '*'
+     *                                        'Content-Type' => '*'
+     *                                        'Content-Disposition' => '*'
+     *                                        'Content-Language' => '*'
+     *                                        'x-cos-meta-自定义内容' => '*'
+     *
+     * @return array
      */
-    public static function update($bucket, $path,
-                                  $bizAttr = null, $authority = null, $customer_headers_array = null)
+    public static function update($bucket, $path, $bizAttr = null, $authority = null, $customer_headers_array = null)
     {
         $path = self::normalizerPath($path);
 
         return self::updateBase($bucket, $path, $bizAttr, $authority, $customer_headers_array);
     }
 
-    /*
+    /**
      * 查询文件信息
-     * @param  string  $bucket  bucket名称
-     * @param  string  $path        文件路径
+     *
+     * @param  string $bucket bucket名称
+     * @param  string $path   文件路径
+     *
+     * @return array
      */
     public static function stat($bucket, $path)
     {
@@ -232,17 +251,20 @@ class Cosapi
         return self::statBase($bucket, $path);
     }
 
-    /*
+    /**
      * 删除文件
-     * @param  string  $bucket
-     * @param  string  $path      文件路径
+     *
+     * @param  string $bucket
+     * @param  string $path 文件路径
+     *
+     * @return array
      */
     public static function delFile($bucket, $path)
     {
         if (empty($bucket) || empty($path)) {
             return [
                 'code'    => ErrorCode::COSAPI_PARAMS_ERROR,
-                'message' => 'path is empty', ];
+                'message' => 'path is empty',];
         }
 
         $path = self::normalizerPath($path);
@@ -259,7 +281,7 @@ class Cosapi
      * @param string $bizAttr    文件属性
      * @param int    $insertOnly 是否覆盖同名文件:0 覆盖,1:不覆盖
      *
-     * @return [type] [description]
+     * @return array
      */
     private static function uploadFile($bucket, $srcPath, $dstPath, $bizAttr = null, $insertOnly = null)
     {
@@ -269,15 +291,15 @@ class Cosapi
         if (filesize($srcPath) >= self::MAX_UNSLICE_FILE_SIZE) {
             return [
                 'code'    => ErrorCode::COSAPI_PARAMS_ERROR,
-                'message' => 'file '.$srcPath.' larger then 20M, please use uploadBySlicing interface',
+                'message' => 'file ' . $srcPath . ' larger then 20M, please use uploadBySlicing interface',
                 'data'    => [],
             ];
         }
 
-        $expired = time() + self::EXPIRED_SECONDS;
-        $url = self::generateResUrl($bucket, $dstPath);
+        $expired   = time() + self::EXPIRED_SECONDS;
+        $url       = self::generateResUrl($bucket, $dstPath);
         $signature = Auth::createReusableSignature($expired, $bucket);
-        $fileSha = hash_file('sha1', $srcPath);
+        $fileSha   = hash_file('sha1', $srcPath);
 
         $data = [
             'op'       => 'upload',
@@ -297,7 +319,7 @@ class Cosapi
             'timeout' => self::$timeout,
             'data'    => $data,
             'header'  => [
-                'Authorization: '.$signature,
+                'Authorization: ' . $signature,
             ],
         ];
 
@@ -308,21 +330,20 @@ class Cosapi
      * 内部方法,上传文件.
      *
      * @param string $bucket     bucket名称
-     * @param string $srcPath    本地文件路径
-     * @param string $dstPath    上传的文件路径
+     * @param string $srcFpath   本地文件路径
+     * @param string $dstFpath   上传的文件路径
      * @param string $bizAttr    文件属性
      * @param string $sliceSize  分片大小
      * @param int    $insertOnly 是否覆盖同名文件:0 覆盖,1:不覆盖
      *
-     * @return [type] [description]
+     * @return array
      */
-    private static function uploadBySlicing(
-        $bucket, $srcFpath, $dstFpath, $bizAttr = null, $sliceSize = null, $insertOnly = null)
+    private static function uploadBySlicing($bucket, $srcFpath, $dstFpath, $bizAttr = null, $sliceSize = null, $insertOnly = null)
     {
-        $srcFpath = realpath($srcFpath);
-        $fileSize = filesize($srcFpath);
-        $dstFpath = self::cosUrlEncode($dstFpath);
-        $url = self::generateResUrl($bucket, $dstFpath);
+        $srcFpath   = realpath($srcFpath);
+        $fileSize   = filesize($srcFpath);
+        $dstFpath   = self::cosUrlEncode($dstFpath);
+        $url        = self::generateResUrl($bucket, $dstFpath);
         $sliceCount = ceil($fileSize / $sliceSize);
         // expiration seconds for one slice mutiply by slice count
         // will be the expired seconds for whole file
@@ -387,21 +408,23 @@ class Cosapi
         ];
     }
 
-    /*
+    /**
      * 内部公共函数
-     * @param  string  $bucket bucket名称
-     * @param  string  $path       文件夹路径
-     * @param  int     $num        拉取的总数
-     * @param  string  $pattern    eListBoth(默认),ListDirOnly,eListFileOnly
-     * @param  int     $order      默认正序(=0), 填1为反序,
-     * @param  string  $context    在翻页查询时候用到
+     *
+     * @param  string $bucket  bucket名称
+     * @param  string $path    文件夹路径
+     * @param  int    $num     拉取的总数
+     * @param  string $pattern eListBoth(默认),ListDirOnly,eListFileOnly
+     * @param  int    $order   默认正序(=0), 填1为反序,
+     * @param  string $context 在翻页查询时候用到
+     *
+     * @return array
      */
-    private static function listBase(
-        $bucket, $path, $num = 20, $pattern = 'eListBoth', $order = 0, $context = null)
+    private static function listBase($bucket, $path, $num = 20, $pattern = 'eListBoth', $order = 0, $context = null)
     {
-        $path = self::cosUrlEncode($path);
-        $expired = time() + self::EXPIRED_SECONDS;
-        $url = self::generateResUrl($bucket, $path);
+        $path      = self::cosUrlEncode($path);
+        $expired   = time() + self::EXPIRED_SECONDS;
+        $url       = self::generateResUrl($bucket, $path);
         $signature = Auth::createReusableSignature($expired, $bucket);
 
         $data = [
@@ -436,39 +459,42 @@ class Cosapi
             $data['context'] = $context;
         }
 
-        $url = $url.'?'.http_build_query($data);
+        $url = $url . '?' . http_build_query($data);
 
         $req = [
             'url'     => $url,
             'method'  => 'get',
             'timeout' => self::$timeout,
             'header'  => [
-                'Authorization: '.$signature,
+                'Authorization: ' . $signature,
             ],
         ];
 
         return self::sendRequest($req);
     }
 
-    /*
+    /**
      * 内部公共方法(更新文件和更新文件夹)
-     * @param  string  $bucket  bucket名称
-     * @param  string  $path        路径
-     * @param  string  $bizAttr     文件/目录属性
-     * @param  string  $authority:  eInvalid/eWRPrivate(私有)/eWPrivateRPublic(公有读写)
-     * @param  array   $customer_headers_array 携带的用户自定义头域,包括
-     * 'Cache-Control' => '*'
-     * 'Content-Type' => '*'
-     * 'Content-Disposition' => '*'
-     * 'Content-Language' => '*'
-     * 'x-cos-meta-自定义内容' => '*'
+     *
+     * @param  string $bucket                 bucket名称
+     * @param  string $path                   路径
+     * @param  string $bizAttr                文件/目录属性
+     * @param  string $authority              eInvalid/eWRPrivate(私有)/eWPrivateRPublic(公有读写)
+     * @param  array  $custom_headers_array   携带的用户自定义头域,包括
+     *                                        'Cache-Control' => '*'
+     *                                        'Content-Type' => '*'
+     *                                        'Content-Disposition' => '*'
+     *                                        'Content-Language' => '*'
+     *                                        'x-cos-meta-自定义内容' => '*'
+     *
+     * @return array
      */
     private static function updateBase(
         $bucket, $path, $bizAttr = null, $authority = null, $custom_headers_array = null)
     {
         $path = self::cosUrlEncode($path);
-        $expired = time() + self::EXPIRED_SECONDS;
-        $url = self::generateResUrl($bucket, $path);
+        //$expired = time() + self::EXPIRED_SECONDS;
+        $url       = self::generateResUrl($bucket, $path);
         $signature = Auth::createNonreusableSignature($bucket, $path);
 
         $data = ['op' => 'update'];
@@ -481,7 +507,7 @@ class Cosapi
             if (self::isAuthorityValid($authority) == false) {
                 return [
                     'code'    => ErrorCode::COSAPI_PARAMS_ERROR,
-                    'message' => 'parameter authority invalid', ];
+                    'message' => 'parameter authority invalid',];
             }
 
             $data['authority'] = $authority;
@@ -500,7 +526,7 @@ class Cosapi
             'timeout' => self::$timeout,
             'data'    => $data,
             'header'  => [
-                'Authorization: '.$signature,
+                'Authorization: ' . $signature,
                 'Content-Type: application/json',
             ],
         ];
@@ -515,44 +541,47 @@ class Cosapi
      */
     private static function statBase($bucket, $path)
     {
-        $path = self::cosUrlEncode($path);
-        $expired = time() + self::EXPIRED_SECONDS;
-        $url = self::generateResUrl($bucket, $path);
+        $path      = self::cosUrlEncode($path);
+        $expired   = time() + self::EXPIRED_SECONDS;
+        $url       = self::generateResUrl($bucket, $path);
         $signature = Auth::createReusableSignature($expired, $bucket);
 
         $data = ['op' => 'stat'];
 
-        $url = $url.'?'.http_build_query($data);
+        $url = $url . '?' . http_build_query($data);
 
         $req = [
             'url'     => $url,
             'method'  => 'get',
             'timeout' => self::$timeout,
             'header'  => [
-                'Authorization: '.$signature,
+                'Authorization: ' . $signature,
             ],
         ];
 
         return self::sendRequest($req);
     }
 
-    /*
+    /**
      * 内部私有方法
-     * @param  string  $bucket  bucket名称
-     * @param  string  $path        文件/目录路径路径
+     *
+     * @param  string $bucket bucket名称
+     * @param  string $path   文件/目录路径路径
+     *
+     * @return array
      */
     private static function delBase($bucket, $path)
     {
         if ($path == '/') {
             return [
                 'code'    => ErrorCode::COSAPI_PARAMS_ERROR,
-                'message' => 'can not delete bucket using api! go to '.
-                    'http://console.qcloud.com/cos to operate bucket', ];
+                'message' => 'can not delete bucket using api! go to ' .
+                    'http://console.qcloud.com/cos to operate bucket',];
         }
 
         $path = self::cosUrlEncode($path);
-        $expired = time() + self::EXPIRED_SECONDS;
-        $url = self::generateResUrl($bucket, $path);
+        //$expired = time() + self::EXPIRED_SECONDS;
+        $url       = self::generateResUrl($bucket, $path);
         $signature = Auth::createNonreusableSignature($bucket, $path);
 
         $data = ['op' => 'delete'];
@@ -565,7 +594,7 @@ class Cosapi
             'timeout' => self::$timeout,
             'data'    => $data,
             'header'  => [
-                'Authorization: '.$signature,
+                'Authorization: ' . $signature,
                 'Content-Type: application/json',
             ],
         ];
@@ -573,31 +602,40 @@ class Cosapi
         return self::sendRequest($req);
     }
 
-    /*
+    /**
      * 内部公共方法, 路径编码
-     * @param  string  $path 待编码路径
+     *
+     * @param  string $path 待编码路径
+     *
+     * @return mixed
      */
     private static function cosUrlEncode($path)
     {
         return str_replace('%2F', '/', rawurlencode($path));
     }
 
-    /*
+    /**
      * 内部公共方法, 构造URL
-     * @param  string  $bucket
-     * @param  string  $dstPath
+     *
+     * @param  string $bucket
+     * @param  string $dstPath
+     *
+     * @return string
      */
     private static function generateResUrl($bucket, $dstPath)
     {
         $endPoint = Conf::API_COSAPI_END_POINT;
         $endPoint = str_replace('region', self::$region, $endPoint);
 
-        return $endPoint.Conf::getAppId().'/'.$bucket.$dstPath;
+        return $endPoint . Conf::getAppId() . '/' . $bucket . $dstPath;
     }
 
-    /*
+    /**
      * 内部公共方法, 发送消息
-     * @param  string  $req
+     *
+     * @param  array $req
+     *
+     * @return array
      */
     private static function sendRequest($req)
     {
@@ -609,7 +647,7 @@ class Cosapi
             ];
         }
 
-        $info = HttpClient::info();
+        //$info = HttpClient::info();
         $ret = json_decode($rsp, true);
 
         if ($ret === null) {
@@ -625,27 +663,53 @@ class Cosapi
 
     /**
      * Get slice size.
+     *
+     * @param string $sliceSize
+     *
+     * @return int
      */
     private static function getSliceSize($sliceSize)
     {
-        // Fix slice size to 1MB.
-        return self::SLICE_SIZE_1M;
+        $sliceSize = (int)$sliceSize;
+
+        switch ($sliceSize) {
+            case 512:
+                $sliceSize = 0.5 * self::SLICE_SIZE_1M;
+                break;
+            case 1:
+                $sliceSize = 1 * self::SLICE_SIZE_1M;
+                break;
+            case 2:
+                $sliceSize = 2 * self::SLICE_SIZE_1M;
+                break;
+            case 3:
+                $sliceSize = 3 * self::SLICE_SIZE_1M;
+                break;
+            default:
+                // Fix slice size to 1MB.
+                $sliceSize = self::SLICE_SIZE_1M;
+        }
+
+        return $sliceSize;
     }
 
-    /*
+    /**
      * 内部方法, 规整文件路径
-     * @param  string  $path      文件路径
-     * @param  string  $isfolder  是否为文件夹
+     *
+     * @param  string  $path     文件路径
+     * @param  boolean $isfolder 是否为文件夹
+     *
+     * @return string
      */
     private static function normalizerPath($path, $isfolder = false)
     {
         if (preg_match('/^\//', $path) == 0) {
-            $path = '/'.$path;
+            $path = '/' . $path;
         }
 
         if ($isfolder == true) {
             if (preg_match('/\/$/', $path) == 0) {
-                $path = $path.'/';
+                $path = $path . '/';
             }
         }
 
@@ -660,7 +724,7 @@ class Cosapi
      *
      * @param string $authority
      *
-     * @return [type] bool
+     * @return bool
      */
     private static function isAuthorityValid($authority)
     {
@@ -674,9 +738,9 @@ class Cosapi
     /**
      * 判断pattern值是否正确.
      *
-     * @param string $authority
+     * @param string $pattern
      *
-     * @return [type] bool
+     * @return bool
      */
     private static function isPatternValid($pattern)
     {
@@ -692,7 +756,7 @@ class Cosapi
      *
      * @param string $key
      *
-     * @return [type] bool
+     * @return bool
      */
     private static function isCustomer_header($key)
     {
@@ -713,7 +777,6 @@ class Cosapi
      * @param array $data
      * @param array $customer_headers_array
      *
-     * @return [type] void
      */
     private static function add_customer_header(&$data, &$customer_headers_array)
     {
@@ -762,10 +825,10 @@ class Cosapi
     /**
      * Copy a file.
      *
-     * @param $bucket    bucket name.
-     * @param $srcFpath  source file path.
-     * @param $dstFpath  destination file path.
-     * @param $overwrite if the destination location is occupied, overwrite it or not?
+     * @param string  $bucket    bucket name.
+     * @param string  $srcFpath  source file path.
+     * @param string  $dstFpath  destination file path.
+     * @param boolean $overwrite if the destination location is occupied, overwrite it or not?
      *
      * @return array|mixed.
      */
@@ -774,20 +837,20 @@ class Cosapi
         $srcFpath = self::normalizerPath($srcFpath);
         $dstFpath = self::normalizerPath($dstFpath);
 
-        $url = self::generateResUrl($bucket, $srcFpath);
+        $url  = self::generateResUrl($bucket, $srcFpath);
         $sign = Auth::createNonreusableSignature($bucket, $srcFpath);
         $data = [
             'op'            => 'copy',
             'dest_fileid'   => $dstFpath,
             'to_over_write' => $overwrite ? 1 : 0,
         ];
-        $req = [
+        $req  = [
             'url'     => $url,
             'method'  => 'post',
             'timeout' => self::$timeout,
             'data'    => $data,
             'header'  => [
-                'Authorization: '.$sign,
+                'Authorization: ' . $sign,
             ],
         ];
 
@@ -797,32 +860,32 @@ class Cosapi
     /**
      * Move a file.
      *
-     * @param $bucket    bucket name.
-     * @param $srcFpath  source file path.
-     * @param $dstFpath  destination file path.
-     * @param $overwrite if the destination location is occupied, overwrite it or not?
+     * @param string  $bucket    bucket name.
+     * @param string  $srcFpath  source file path.
+     * @param string  $dstFpath  destination file path.
+     * @param boolean $overwrite if the destination location is occupied, overwrite it or not?
      *
-     * @return array|mixed.
+     * @return array
      */
     public static function moveFile($bucket, $srcFpath, $dstFpath, $overwrite = false)
     {
         $srcFpath = self::normalizerPath($srcFpath);
         $dstFpath = self::normalizerPath($dstFpath);
 
-        $url = self::generateResUrl($bucket, $srcFpath);
+        $url  = self::generateResUrl($bucket, $srcFpath);
         $sign = Auth::createNonreusableSignature($bucket, $srcFpath);
         $data = [
             'op'            => 'move',
             'dest_fileid'   => $dstFpath,
             'to_over_write' => $overwrite ? 1 : 0,
         ];
-        $req = [
+        $req  = [
             'url'     => $url,
             'method'  => 'post',
             'timeout' => self::$timeout,
             'data'    => $data,
             'header'  => [
-                'Authorization: '.$sign,
+                'Authorization: ' . $sign,
             ],
         ];
 
