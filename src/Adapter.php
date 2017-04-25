@@ -46,7 +46,7 @@ class Adapter extends AbstractAdapter
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getBucket()
     {
@@ -54,7 +54,7 @@ class Adapter extends AbstractAdapter
     }
 
     /**
-     * @param $path
+     * @param string $path
      *
      * @return string
      */
@@ -78,7 +78,7 @@ class Adapter extends AbstractAdapter
 
         try {
             $response = Cosapi::upload($this->getBucket(), $tmpfname, $path,
-                                       null, null, $config->get('insertOnly', 1));
+                                        null, null, $config->get('insertOnly', 1));
 
             $this->deleteTempFile($tmpfname);
 
@@ -112,7 +112,7 @@ class Adapter extends AbstractAdapter
         $uri = stream_get_meta_data($resource)['uri'];
 
         $response = Cosapi::upload($this->getBucket(), $uri, $path,
-                                   null, null, $config->get('insertOnly', 1));
+                                    null, null, $config->get('insertOnly', 1));
 
         $response = $this->normalizeResponse($response);
 
@@ -140,7 +140,7 @@ class Adapter extends AbstractAdapter
 
         try {
             $response = Cosapi::upload($this->getBucket(), $tmpfname, $path,
-                                       null, null, $config->get('insertOnly', 0));
+                                        null, null, $config->get('insertOnly', 0));
 
             $this->deleteTempFile($tmpfname);
 
@@ -174,7 +174,7 @@ class Adapter extends AbstractAdapter
         $uri = stream_get_meta_data($resource)['uri'];
 
         $response = Cosapi::upload($this->getBucket(), $uri, $path,
-                                   null, null, $config->get('insertOnly', 0));
+                                    null, null, $config->get('insertOnly', 0));
 
         $response = $this->normalizeResponse($response);
 
@@ -393,7 +393,7 @@ class Adapter extends AbstractAdapter
     }
 
     /**
-     * @param $content
+     * @param string $content
      *
      * @return string|bool
      */
@@ -409,7 +409,7 @@ class Adapter extends AbstractAdapter
     }
 
     /**
-     * @param $tmpfname
+     * @param string|boolean $tmpfname
      *
      * @return bool
      */
@@ -423,8 +423,8 @@ class Adapter extends AbstractAdapter
     }
 
     /**
-     * @param $path
-     * @param $content
+     * @param string $path
+     * @param string $content
      *
      * @return bool
      */

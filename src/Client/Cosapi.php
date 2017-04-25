@@ -610,7 +610,7 @@ class Cosapi
      *
      * @param string $path 待编码路径
      *
-     * @return mixed
+     * @return string
      */
     private static function cosUrlEncode($path)
     {
@@ -793,6 +793,10 @@ class Cosapi
 
     // Check |$path| is a valid file path.
     // Return true on success, otherwise return false.
+
+    /**
+     * @param string $path
+     */
     private static function isValidPath($path)
     {
         if (strpos($path, '?') !== false) {
