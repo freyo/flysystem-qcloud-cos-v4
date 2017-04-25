@@ -46,7 +46,7 @@ class Adapter extends AbstractAdapter
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getBucket()
     {
@@ -78,7 +78,7 @@ class Adapter extends AbstractAdapter
 
         try {
             $response = Cosapi::upload($this->getBucket(), $tmpfname, $path,
-                                       null, null, $config->get('insertOnly', 1));
+                                        null, null, $config->get('insertOnly', 1));
 
             $this->deleteTempFile($tmpfname);
 
@@ -112,7 +112,7 @@ class Adapter extends AbstractAdapter
         $uri = stream_get_meta_data($resource)['uri'];
 
         $response = Cosapi::upload($this->getBucket(), $uri, $path,
-                                   null, null, $config->get('insertOnly', 1));
+                                    null, null, $config->get('insertOnly', 1));
 
         $response = $this->normalizeResponse($response);
 
@@ -140,7 +140,7 @@ class Adapter extends AbstractAdapter
 
         try {
             $response = Cosapi::upload($this->getBucket(), $tmpfname, $path,
-                                       null, null, $config->get('insertOnly', 0));
+                                        null, null, $config->get('insertOnly', 0));
 
             $this->deleteTempFile($tmpfname);
 
@@ -174,7 +174,7 @@ class Adapter extends AbstractAdapter
         $uri = stream_get_meta_data($resource)['uri'];
 
         $response = Cosapi::upload($this->getBucket(), $uri, $path,
-                                   null, null, $config->get('insertOnly', 0));
+                                    null, null, $config->get('insertOnly', 0));
 
         $response = $this->normalizeResponse($response);
 
@@ -241,11 +241,11 @@ class Adapter extends AbstractAdapter
      * @param string $dirname
      * @param Config $config
      *
-     * @return bool
+     * @return array|bool
      */
     public function createDir($dirname, Config $config)
     {
-        return (bool) $this->normalizeResponse(
+        return $this->normalizeResponse(
             Cosapi::createFolder($this->getBucket(), $dirname)
         );
     }
@@ -409,12 +409,16 @@ class Adapter extends AbstractAdapter
     }
 
     /**
-     * @param string|boolean $tmpfname
+     * @param string|bool $tmpfname
      *
      * @return bool
      */
     private function deleteTempFile($tmpfname)
     {
+        if (false === $tmpfname) {
+            return false;
+        }
+
         return unlink($tmpfname);
     }
 

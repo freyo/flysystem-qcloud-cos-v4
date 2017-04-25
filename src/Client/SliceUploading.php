@@ -10,26 +10,26 @@ class SliceUploading
     // default task number for concurrently uploading slices.
     const DEFAULT_CONCURRENT_TASK_NUMBER = 3;
 
-    private $timeoutMs;            // int: timeout in milliseconds for each http request.
-    private $maxRetryCount;        // int: max retry count on failure.
+    private $timeoutMs; // int: timeout in milliseconds for each http request.
+    private $maxRetryCount; // int: max retry count on failure.
 
-    private $errorCode;            // int: last error code.
-    private $errorMessage;         // string: last error message.
-    private $requestId;            // string: request id for last http request.
-    private $signature;            // string: signature for auth.
-    private $srcFpath;             // string: source file path for uploading.
-    private $url;                  // string: destination url for uploading.
-    private $fileSize;             // int: source file size.
-    private $sliceSize;            // int: slice size for each upload.
-    private $session;              // string: session for each upload transaction.
+    private $errorCode; // int: last error code.
+    private $errorMessage; // string: last error message.
+    private $requestId; // string: request id for last http request.
+    private $signature; // string: signature for auth.
+    private $srcFpath; // string: source file path for uploading.
+    private $url; // string: destination url for uploading.
+    private $fileSize; // int: source file size.
+    private $sliceSize; // int: slice size for each upload.
+    private $session; // string: session for each upload transaction.
     private $concurrentTaskNumber; // int: concurrent uploading task number.
 
-    private $offset;               // int: current uploading offset.
-    private $libcurlWrapper;       // LibcurlWrapper: curl wrapper for sending multi http request concurrently.
+    private $offset; // int: current uploading offset.
+    private $libcurlWrapper; // LibcurlWrapper: curl wrapper for sending multi http request concurrently.
 
-    private $accessUrl;            // string: access url.
-    private $resourcePath;         // string: resource path.
-    private $sourceUrl;            // string: source url.
+    private $accessUrl; // string: access url.
+    private $resourcePath; // string: resource path.
+    private $sourceUrl; // string: source url.
 
     /**
      * timeoutMs: max timeout in milliseconds for each http request.
