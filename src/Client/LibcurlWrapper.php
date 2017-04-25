@@ -5,10 +5,10 @@ namespace Freyo\Flysystem\QcloudCOSv4\Client;
 // A simple wrapper for libcurl using multi interface to do transfers in parallel.
 class LibcurlWrapper
 {
-    private $sequence;        // integer: sequence id for each request.
+    private $sequence; // integer: sequence id for each request.
     private $curlMultiHandle; // curl handle: curl multi handle.
-    private $curlHandleInfo;  // array: array of active curl handle.
-    private $idleCurlHandle;  // array: idle curl handle which can be reused.
+    private $curlHandleInfo; // array: array of active curl handle.
+    private $idleCurlHandle; // array: idle curl handle which can be reused.
 
     public function __construct()
     {
@@ -67,7 +67,7 @@ class LibcurlWrapper
 
     public function performSendingRequest()
     {
-        for (; ;) {
+        for (;;) {
             $active = null;
 
             $mrc = $this->doCurlMulti();

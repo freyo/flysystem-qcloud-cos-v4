@@ -80,8 +80,8 @@ class HttpClient
             curl_setopt(self::$curlHandler, CURLOPT_SSL_VERIFYHOST, 2);
             self::setCurlSSLVersion($request);
         } elseif ($ssl) {
-            curl_setopt(self::$curlHandler, CURLOPT_SSL_VERIFYPEER, false);   //true any ca
-            curl_setopt(self::$curlHandler, CURLOPT_SSL_VERIFYHOST, 1);       //check only host
+            curl_setopt(self::$curlHandler, CURLOPT_SSL_VERIFYPEER, false); //true any ca
+            curl_setopt(self::$curlHandler, CURLOPT_SSL_VERIFYHOST, 1); //check only host
             self::setCurlSSLVersion($request);
         }
         $ret = curl_exec(self::$curlHandler);
