@@ -81,7 +81,7 @@ class HttpClient
             self::setCurlSSLVersion($request);
         } elseif ($ssl) {
             curl_setopt(self::$curlHandler, CURLOPT_SSL_VERIFYPEER, false); //true any ca
-            curl_setopt(self::$curlHandler, CURLOPT_SSL_VERIFYHOST, 1); //check only host
+            curl_setopt(self::$_curlHandler, CURLOPT_SSL_VERIFYHOST, 0); //not check the names
             self::setCurlSSLVersion($request);
         }
         $ret = curl_exec(self::$curlHandler);
