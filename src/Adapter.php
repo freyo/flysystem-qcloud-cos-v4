@@ -37,9 +37,9 @@ class Adapter extends AbstractAdapter
         Conf::setSecretKey($config['secret_key']);
 
         $this->bucket = $config['bucket'];
-        $this->debug = $config['debug'];
+        $this->debug  = $config['debug'];
 
-        $this->setPathPrefix($config['protocol'].'://'.$config['domain'].'/');
+        $this->setPathPrefix($config['protocol'] . '://' . $config['domain'] . '/');
 
         Cosapi::setTimeout($config['timeout']);
         Cosapi::setRegion($config['region']);
@@ -76,20 +76,16 @@ class Adapter extends AbstractAdapter
     {
         $temporaryPath = $this->createTemporaryFile($contents);
 
-        try {
-            $response = Cosapi::upload($this->getBucket(), $temporaryPath, $path,
-                                        null, null, $config->get('insertOnly', 1));
+        $response = Cosapi::upload($this->getBucket(), $temporaryPath, $path,
+            null, null, $config->get('insertOnly', 1));
 
-            $response = $this->normalizeResponse($response);
+        $response = $this->normalizeResponse($response);
 
-            if (false === $response) {
-                return false;
-            }
-
-            $this->setContentType($path, $contents);
-        } catch (RuntimeException $exception) {
-            throw $exception;
+        if (false === $response) {
+            return false;
         }
+
+        $this->setContentType($path, $contents);
 
         return $response;
     }
@@ -108,7 +104,7 @@ class Adapter extends AbstractAdapter
         $uri = stream_get_meta_data($resource)['uri'];
 
         $response = Cosapi::upload($this->getBucket(), $uri, $path,
-                                    null, null, $config->get('insertOnly', 1));
+            null, null, $config->get('insertOnly', 1));
 
         $response = $this->normalizeResponse($response);
 
@@ -134,20 +130,16 @@ class Adapter extends AbstractAdapter
     {
         $temporaryPath = $this->createTemporaryFile($contents);
 
-        try {
-            $response = Cosapi::upload($this->getBucket(), $temporaryPath, $path,
-                                        null, null, $config->get('insertOnly', 0));
+        $response = Cosapi::upload($this->getBucket(), $temporaryPath, $path,
+            null, null, $config->get('insertOnly', 0));
 
-            $response = $this->normalizeResponse($response);
+        $response = $this->normalizeResponse($response);
 
-            if (false === $response) {
-                return false;
-            }
-
-            $this->setContentType($path, $contents);
-        } catch (RuntimeException $exception) {
-            throw $exception;
+        if (false === $response) {
+            return false;
         }
+
+        $this->setContentType($path, $contents);
 
         return $response;
     }
@@ -166,7 +158,7 @@ class Adapter extends AbstractAdapter
         $uri = stream_get_meta_data($resource)['uri'];
 
         $response = Cosapi::upload($this->getBucket(), $uri, $path,
-                                    null, null, $config->get('insertOnly', 0));
+            null, null, $config->get('insertOnly', 0));
 
         $response = $this->normalizeResponse($response);
 
@@ -187,7 +179,7 @@ class Adapter extends AbstractAdapter
      */
     public function rename($path, $newpath)
     {
-        return (bool) $this->normalizeResponse(
+        return (bool)$this->normalizeResponse(
             Cosapi::moveFile($this->getBucket(), $path, $newpath, 1)
         );
     }
@@ -200,7 +192,7 @@ class Adapter extends AbstractAdapter
      */
     public function copy($path, $newpath)
     {
-        return (bool) $this->normalizeResponse(
+        return (bool)$this->normalizeResponse(
             Cosapi::copyFile($this->getBucket(), $path, $newpath, 1)
         );
     }
@@ -212,7 +204,7 @@ class Adapter extends AbstractAdapter
      */
     public function delete($path)
     {
-        return (bool) $this->normalizeResponse(
+        return (bool)$this->normalizeResponse(
             Cosapi::delFile($this->getBucket(), $path)
         );
     }
@@ -224,7 +216,7 @@ class Adapter extends AbstractAdapter
      */
     public function deleteDir($dirname)
     {
-        return (bool) $this->normalizeResponse(
+        return (bool)$this->normalizeResponse(
             Cosapi::delFolder($this->getBucket(), $dirname)
         );
     }
@@ -250,9 +242,10 @@ class Adapter extends AbstractAdapter
      */
     public function setVisibility($path, $visibility)
     {
-        $visibility = $visibility === AdapterInterface::VISIBILITY_PUBLIC ? 'eWPrivateRPublic' : 'eWRPrivate';
+        $visibility = ($visibility === AdapterInterface::VISIBILITY_PUBLIC)
+            ? 'eWPrivateRPublic' : 'eWRPrivate';
 
-        return (bool) $this->normalizeResponse(
+        return (bool)$this->normalizeResponse(
             Cosapi::update($this->getBucket(), $path, null, $visibility)
         );
     }
@@ -265,7 +258,7 @@ class Adapter extends AbstractAdapter
     public function has($path)
     {
         try {
-            return (bool) $this->getMetadata($path);
+            return (bool)$this->getMetadata($path);
         } catch (RuntimeException $exception) {
             return false;
         }
@@ -274,21 +267,25 @@ class Adapter extends AbstractAdapter
     /**
      * @param string $path
      *
-     * @return array
+     * @return array|bool
      */
     public function read($path)
     {
-        return ['contents' => file_get_contents($this->getUrl($path))];
+        $contents = file_get_contents($this->applyPathPrefix($path));
+
+        return $contents !== false ? compact('contents') : false;
     }
 
     /**
      * @param string $path
      *
-     * @return array
+     * @return array|bool
      */
     public function readStream($path)
     {
-        return ['stream' => fopen($this->getUrl($path), 'r')];
+        $stream = fopen($this->applyPathPrefix($path), 'r');
+
+        return $stream !== false ? compact('stream') : false;
     }
 
     /**
@@ -325,11 +322,7 @@ class Adapter extends AbstractAdapter
     {
         $stat = $this->getMetadata($path);
 
-        if (isset($stat['filesize'])) {
-            return ['size' => $stat['filesize']];
-        }
-
-        return false;
+        return isset($stat['filesize']) ? ['size' => $stat['filesize']] : false;
     }
 
     /**
@@ -341,11 +334,8 @@ class Adapter extends AbstractAdapter
     {
         $stat = $this->getMetadata($path);
 
-        if (isset($stat['custom_headers']['Content-Type'])) {
-            return ['mimetype' => $stat['custom_headers']['Content-Type']];
-        }
-
-        return false;
+        return isset($stat['custom_headers']['Content-Type'])
+            ? ['mimetype' => $stat['custom_headers']['Content-Type']] : false;
     }
 
     /**
@@ -357,11 +347,7 @@ class Adapter extends AbstractAdapter
     {
         $stat = $this->getMetadata($path);
 
-        if (isset($stat['ctime'])) {
-            return ['timestamp' => $stat['ctime']];
-        }
-
-        return false;
+        return isset($stat['ctime']) ? ['timestamp' => $stat['ctime']] : false;
     }
 
     /**
@@ -389,13 +375,16 @@ class Adapter extends AbstractAdapter
      *
      * @param string $content
      *
-     * @return bool|string
+     * @return string
+     * @throws RuntimeException
      */
     protected function createTemporaryFile($content)
     {
         $temporaryPath = $this->getTemporaryPath();
 
-        chmod($temporaryPath, 0777);
+        if (false === $temporaryPath) {
+            throw new RuntimeException("Unable to create temporary file in '{$temporaryPath}'.");
+        }
 
         file_put_contents($temporaryPath, $content);
 
@@ -410,7 +399,7 @@ class Adapter extends AbstractAdapter
     /**
      * Gets a temporary file path.
      *
-     * @return string
+     * @return bool|string
      */
     protected function getTemporaryPath()
     {
