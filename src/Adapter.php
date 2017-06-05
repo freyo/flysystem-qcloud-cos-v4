@@ -371,7 +371,7 @@ class Adapter extends AbstractAdapter
     }
 
     /**
-     * Creates a temporary file
+     * Creates a temporary file.
      *
      * @param string $content
      *
