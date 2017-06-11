@@ -2,8 +2,6 @@
 
 namespace Freyo\Flysystem\QcloudCOSv4\Client;
 
-date_default_timezone_set('PRC');
-
 class Cosapi
 {
     //计算sign签名的时间参数
@@ -18,6 +16,18 @@ class Cosapi
     //HTTP请求超时时间
     private static $timeout = 60;
     private static $region = 'gz'; // default region is guangzou
+
+    /**
+     * 获取当前指定时区的 Unix 时间戳
+     *
+     * @param string $timezone
+     *
+     * @return int
+     */
+    public static function time($timezone = 'Asia/Shanghai')
+    {
+        return date_create('now', timezone_open($timezone))->getTimestamp();
+    }
 
     /**
      * 设置HTTP请求超时时间.
@@ -97,7 +107,7 @@ class Cosapi
 
         $folder = self::normalizerPath($folder, true);
         $folder = self::cosUrlEncode($folder);
-        $expired = time() + self::EXPIRED_SECONDS;
+        $expired = self::time() + self::EXPIRED_SECONDS;
         $url = self::generateResUrl($bucket, $folder);
         $signature = Auth::createReusableSignature($expired, $bucket);
 
@@ -296,7 +306,7 @@ class Cosapi
             ];
         }
 
-        $expired = time() + self::EXPIRED_SECONDS;
+        $expired = self::time() + self::EXPIRED_SECONDS;
         $url = self::generateResUrl($bucket, $dstPath);
         $signature = Auth::createReusableSignature($expired, $bucket);
         $fileSha = hash_file('sha1', $srcPath);
@@ -347,9 +357,9 @@ class Cosapi
         $sliceCount = ceil($fileSize / $sliceSize);
         // expiration seconds for one slice mutiply by slice count
         // will be the expired seconds for whole file
-        $expiration = time() + (self::EXPIRED_SECONDS * $sliceCount);
-        if ($expiration >= (time() + 10 * 24 * 60 * 60)) {
-            $expiration = time() + 10 * 24 * 60 * 60;
+        $expiration = self::time() + (self::EXPIRED_SECONDS * $sliceCount);
+        if ($expiration >= (self::time() + 10 * 24 * 60 * 60)) {
+            $expiration = self::time() + 10 * 24 * 60 * 60;
         }
         $signature = Auth::createReusableSignature($expiration, $bucket);
 
@@ -423,7 +433,7 @@ class Cosapi
     private static function listBase($bucket, $path, $num = 20, $pattern = 'eListBoth', $order = 0, $context = null)
     {
         $path = self::cosUrlEncode($path);
-        $expired = time() + self::EXPIRED_SECONDS;
+        $expired = self::time() + self::EXPIRED_SECONDS;
         $url = self::generateResUrl($bucket, $path);
         $signature = Auth::createReusableSignature($expired, $bucket);
 
@@ -545,7 +555,7 @@ class Cosapi
     private static function statBase($bucket, $path)
     {
         $path = self::cosUrlEncode($path);
-        $expired = time() + self::EXPIRED_SECONDS;
+        $expired = self::time() + self::EXPIRED_SECONDS;
         $url = self::generateResUrl($bucket, $path);
         $signature = Auth::createReusableSignature($expired, $bucket);
 
