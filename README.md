@@ -118,6 +118,40 @@ bool $flysystem->setVisibility('file.md', 'public'); //or 'private'
       ],
   ],
   ```
+
+## Use in Lumen
+
+1. Add the following code to your `bootstrap/app.php`:
+
+  ```php
+  $app->singleton('filesystem', function ($app) {
+      return $app->loadComponent(
+          'filesystems',
+          Illuminate\Filesystem\FilesystemServiceProvider::class,
+          'filesystem'
+      );
+  });
+  ```
+
+2. And this:
+  
+  ```php
+  $app->register(Freyo\Flysystem\QcloudCOSv4\ServiceProvider::class);
+  ```
+
+3. Configure `.env`:
+  
+  ```php
+  COSV4_PROTOCOL=http
+  COSV4_DOMAIN=
+  COSV4_APP_ID=
+  COSV4_SECRET_ID=
+  COSV4_SECRET_KEY=
+  COSV4_TIMEOUT=60
+  COSV4_BUCKET=
+  COSV4_REGION=gz
+  COSV4_DEBUG=true
+  ```
   
 ### Usage
 

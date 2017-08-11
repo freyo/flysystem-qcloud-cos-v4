@@ -5,8 +5,10 @@ namespace Freyo\Flysystem\QcloudCOSv4;
 use Freyo\Flysystem\QcloudCOSv4\Plugins\GetUrl;
 use Freyo\Flysystem\QcloudCOSv4\Plugins\PutRemoteFile;
 use Freyo\Flysystem\QcloudCOSv4\Plugins\PutRemoteFileAs;
+use Illuminate\Foundation\Application as LaravelApplication;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
+use Laravel\Lumen\Application as LumenApplication;
 use League\Flysystem\Filesystem;
 
 /**
@@ -21,18 +23,26 @@ class ServiceProvider extends LaravelServiceProvider
      */
     public function boot()
     {
-        $this->publishes([
-            __DIR__.'/filesystems.php' => config_path('filesystems.php'),
-        ]);
+        $source = realpath(__DIR__ . '/filesystems.php');
 
-        Storage::extend('cosv4', function ($app, $config) {
-            return new Filesystem(new Adapter($config));
-        });
+        if ($this->app instanceof LaravelApplication) {
+            if ($this->app->runningInConsole()) {
+                $this->publishes([
+                    $source => config_path('filesystems.php'),
+                ]);
+            }
+        } elseif ($this->app instanceof LumenApplication) {
+            $this->app->configure('filesystems');
+        }
 
-        Storage::disk('cosv4')
-                ->addPlugin(new PutRemoteFile())
-                ->addPlugin(new PutRemoteFileAs())
-                ->addPlugin(new GetUrl());
+        $this->app->make('filesystem')
+                  ->extend('cosv4', function ($app, $config) {
+                      return new Filesystem(new Adapter($config));
+                  })
+                  ->disk('cosv4')
+                  ->addPlugin(new PutRemoteFile())
+                  ->addPlugin(new PutRemoteFileAs())
+                  ->addPlugin(new GetUrl());
     }
 
     /**
