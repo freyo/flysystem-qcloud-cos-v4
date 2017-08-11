@@ -6,7 +6,6 @@ use Freyo\Flysystem\QcloudCOSv4\Plugins\GetUrl;
 use Freyo\Flysystem\QcloudCOSv4\Plugins\PutRemoteFile;
 use Freyo\Flysystem\QcloudCOSv4\Plugins\PutRemoteFileAs;
 use Illuminate\Foundation\Application as LaravelApplication;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 use Laravel\Lumen\Application as LumenApplication;
 use League\Flysystem\Filesystem;
@@ -23,7 +22,7 @@ class ServiceProvider extends LaravelServiceProvider
      */
     public function boot()
     {
-        $source = realpath(__DIR__ . '/filesystems.php');
+        $source = realpath(__DIR__.'/filesystems.php');
 
         if ($this->app instanceof LaravelApplication) {
             if ($this->app->runningInConsole()) {

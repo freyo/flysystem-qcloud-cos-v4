@@ -18,7 +18,7 @@ class Cosapi
     private static $region = 'gz'; // default region is guangzou
 
     /**
-     * 获取当前指定时区的 Unix 时间戳
+     * 获取当前指定时区的 Unix 时间戳.
      *
      * @param string $timezone
      *
