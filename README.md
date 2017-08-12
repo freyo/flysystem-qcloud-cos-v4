@@ -94,10 +94,13 @@ bool $flysystem->setVisibility('file.md', 'public'); //or 'private'
 
 ## Use in Laravel
 
-1. Register `config/app.php`:
+1. Register the service provider in `config/app.php`:
 
   ```php
-  Freyo\Flysystem\QcloudCOSv4\ServiceProvider::class,
+  'providers' => [
+    // ...
+    Freyo\Flysystem\QcloudCOSv4\ServiceProvider::class,
+  ]
   ```
 
 2. Configure `config/filesystems.php`:
