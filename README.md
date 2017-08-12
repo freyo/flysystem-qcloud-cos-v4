@@ -107,6 +107,7 @@ bool $flysystem->setVisibility('file.md', 'public'); //or 'private'
 
   ```php
   'disks'=>[
+      // ...
       'cosv4' => [
           'driver' => 'cosv4',
           'protocol' => env('COSV4_PROTOCOL', 'http'),
