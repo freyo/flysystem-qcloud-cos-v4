@@ -129,6 +129,7 @@ bool $flysystem->setVisibility('file.md', 'public'); //or 'private'
 
   ```php
   $app->singleton('filesystem', function ($app) {
+      $app->alias('filesystem',Illuminate\Contracts\Filesystem\Factory::class);
       return $app->loadComponent(
           'filesystems',
           Illuminate\Filesystem\FilesystemServiceProvider::class,
