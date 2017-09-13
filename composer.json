@@ -27,5 +27,12 @@
             "name": "freyo",
             "email": "freyhsiao@gmail.com"
         }
-    ]
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Freyo\\Flysystem\\QcloudCOSv4\\ServiceProvider"
+            ]
+        }
+    }
 }
