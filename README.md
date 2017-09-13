@@ -93,6 +93,8 @@ bool $flysystem->setVisibility('file.md', 'public'); //or 'private'
 [Full API documentation.](http://flysystem.thephpleague.com/api/)
 
 ## Use in Laravel
+  
+**Laravel 5.5 uses Package Auto-Discovery, so doesn't require you to manually add the ServiceProvider.**
 
 1. Register the service provider in `config/app.php`:
 
@@ -129,7 +131,7 @@ bool $flysystem->setVisibility('file.md', 'public'); //or 'private'
 
   ```php
   $app->singleton('filesystem', function ($app) {
-      $app->alias('filesystem',Illuminate\Contracts\Filesystem\Factory::class);
+      $app->alias('filesystem', Illuminate\Contracts\Filesystem\Factory::class);
       return $app->loadComponent(
           'filesystems',
           Illuminate\Filesystem\FilesystemServiceProvider::class,
