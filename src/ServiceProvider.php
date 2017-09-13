@@ -22,26 +22,20 @@ class ServiceProvider extends LaravelServiceProvider
      */
     public function boot()
     {
-        $source = realpath(__DIR__.'/filesystems.php');
-
-        if ($this->app instanceof LaravelApplication) {
-            if ($this->app->runningInConsole()) {
-                $this->publishes([
-                    $source => config_path('filesystems.php'),
-                ]);
-            }
-        } elseif ($this->app instanceof LumenApplication) {
+        if ($this->app instanceof LumenApplication) {
             $this->app->configure('filesystems');
         }
 
         $this->app->make('filesystem')
                   ->extend('cosv4', function ($app, $config) {
-                      return new Filesystem(new Adapter($config));
-                  })
-                  ->disk('cosv4')
-                  ->addPlugin(new PutRemoteFile())
-                  ->addPlugin(new PutRemoteFileAs())
-                  ->addPlugin(new GetUrl());
+                      $flysystem = new Filesystem(new Adapter($config));
+                      
+                      $flysystem->addPlugin(new PutRemoteFile());
+                      $flysystem->addPlugin(new PutRemoteFileAs());
+                      $flysystem->addPlugin(new GetUrl());
+                      
+                      return $flysystem;
+                  });
     }
 
     /**
