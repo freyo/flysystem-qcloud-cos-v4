@@ -28,7 +28,7 @@ class ServiceProvider extends LaravelServiceProvider
 
         $this->app->make('filesystem')
                   ->extend('cosv4', function ($app, $config) {
-                      $cosApi    = new Api($config);
+                      $cosApi = new Api($config);
                       $flysystem = new Filesystem(new Adapter($cosApi, $config));
 
                       $flysystem->addPlugin(new PutRemoteFile());
@@ -47,7 +47,7 @@ class ServiceProvider extends LaravelServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/filesystems.php', 'filesystems'
+            __DIR__.'/filesystems.php', 'filesystems'
         );
     }
 }

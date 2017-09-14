@@ -15,17 +15,17 @@ use QCloud\Cos\Api;
 class Adapter extends AbstractAdapter
 {
     /**
-     * @var Api $cosApi
+     * @var Api
      */
     protected $cosApi;
 
     /**
-     * @var string $bucket
+     * @var string
      */
     protected $bucket;
 
     /**
-     * @var bool $debug
+     * @var bool
      */
     protected $debug;
 
@@ -40,9 +40,9 @@ class Adapter extends AbstractAdapter
         $this->cosApi = $cosApi;
 
         $this->bucket = $config['bucket'];
-        $this->debug  = $config['debug'];
+        $this->debug = $config['debug'];
 
-        $this->setPathPrefix($config['protocol'] . '://' . $config['domain'] . '/');
+        $this->setPathPrefix($config['protocol'].'://'.$config['domain'].'/');
     }
 
     /**
@@ -171,7 +171,7 @@ class Adapter extends AbstractAdapter
      */
     public function rename($path, $newpath)
     {
-        return (bool)$this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             $this->cosApi->moveFile($this->getBucket(), $path, $newpath, true)
         );
     }
@@ -184,7 +184,7 @@ class Adapter extends AbstractAdapter
      */
     public function copy($path, $newpath)
     {
-        return (bool)$this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             $this->cosApi->copyFile($this->getBucket(), $path, $newpath, true)
         );
     }
@@ -196,7 +196,7 @@ class Adapter extends AbstractAdapter
      */
     public function delete($path)
     {
-        return (bool)$this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             $this->cosApi->delFile($this->getBucket(), $path)
         );
     }
@@ -208,7 +208,7 @@ class Adapter extends AbstractAdapter
      */
     public function deleteDir($dirname)
     {
-        return (bool)$this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             $this->cosApi->delFolder($this->getBucket(), $dirname)
         );
     }
@@ -237,7 +237,7 @@ class Adapter extends AbstractAdapter
         $visibility = ($visibility === AdapterInterface::VISIBILITY_PUBLIC)
             ? 'eWPrivateRPublic' : 'eWRPrivate';
 
-        return (bool)$this->normalizeResponse(
+        return (bool) $this->normalizeResponse(
             $this->cosApi->update($this->getBucket(), $path, null, $visibility)
         );
     }
@@ -250,7 +250,7 @@ class Adapter extends AbstractAdapter
     public function has($path)
     {
         try {
-            return (bool)$this->getMetadata($path);
+            return (bool) $this->getMetadata($path);
         } catch (RuntimeException $exception) {
             return false;
         }
