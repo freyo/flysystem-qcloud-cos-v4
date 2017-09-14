@@ -2,19 +2,23 @@
 
 namespace Freyo\Flysystem\QcloudCOSv4;
 
-use Freyo\Flysystem\QcloudCOSv4\Client\Conf;
-use Freyo\Flysystem\QcloudCOSv4\Client\Cosapi;
 use Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException;
 use League\Flysystem\Adapter\AbstractAdapter;
 use League\Flysystem\AdapterInterface;
 use League\Flysystem\Config;
 use League\Flysystem\Util;
+use QCloud\Cos\Api;
 
 /**
  * Class Adapter.
  */
 class Adapter extends AbstractAdapter
 {
+    /**
+     * @var Api
+     */
+    protected $cosApi;
+
     /**
      * @var
      */
@@ -28,21 +32,17 @@ class Adapter extends AbstractAdapter
     /**
      * Adapter constructor.
      *
-     * @param $config
+     * @param Api   $cosApi
+     * @param array $config
      */
-    public function __construct($config)
+    public function __construct(Api $cosApi, array $config)
     {
-        Conf::setAppId($config['app_id']);
-        Conf::setSecretId($config['secret_id']);
-        Conf::setSecretKey($config['secret_key']);
+        $this->cosApi = $cosApi;
 
         $this->bucket = $config['bucket'];
-        $this->debug = $config['debug'];
+        $this->debug  = $config['debug'];
 
-        $this->setPathPrefix($config['protocol'].'://'.$config['domain'].'/');
-
-        Cosapi::setTimeout($config['timeout']);
-        Cosapi::setRegion($config['region']);
+        $this->setPathPrefix($config['protocol'] . '://' . $config['domain'] . '/');
     }
 
     /**
@@ -76,7 +76,7 @@ class Adapter extends AbstractAdapter
     {
         $temporaryPath = $this->createTemporaryFile($contents);
 
-        $response = Cosapi::upload($this->getBucket(), $temporaryPath, $path,
+        $response = $this->cosApi->upload($this->getBucket(), $temporaryPath, $path,
             null, null, $config->get('insertOnly', 1));
 
         $response = $this->normalizeResponse($response);
@@ -101,7 +101,7 @@ class Adapter extends AbstractAdapter
     {
         $uri = stream_get_meta_data($resource)['uri'];
 
-        $response = Cosapi::upload($this->getBucket(), $uri, $path,
+        $response = $this->cosApi->upload($this->getBucket(), $uri, $path,
             null, null, $config->get('insertOnly', 1));
 
         $response = $this->normalizeResponse($response);
@@ -126,7 +126,7 @@ class Adapter extends AbstractAdapter
     {
         $temporaryPath = $this->createTemporaryFile($contents);
 
-        $response = Cosapi::upload($this->getBucket(), $temporaryPath, $path,
+        $response = $this->cosApi->upload($this->getBucket(), $temporaryPath, $path,
             null, null, $config->get('insertOnly', 0));
 
         $response = $this->normalizeResponse($response);
@@ -151,7 +151,7 @@ class Adapter extends AbstractAdapter
     {
         $uri = stream_get_meta_data($resource)['uri'];
 
-        $response = Cosapi::upload($this->getBucket(), $uri, $path,
+        $response = $this->cosApi->upload($this->getBucket(), $uri, $path,
             null, null, $config->get('insertOnly', 0));
 
         $response = $this->normalizeResponse($response);
@@ -171,8 +171,8 @@ class Adapter extends AbstractAdapter
      */
     public function rename($path, $newpath)
     {
-        return (bool) $this->normalizeResponse(
-            Cosapi::moveFile($this->getBucket(), $path, $newpath, 1)
+        return (bool)$this->normalizeResponse(
+            $this->cosApi->moveFile($this->getBucket(), $path, $newpath, true)
         );
     }
 
@@ -184,8 +184,8 @@ class Adapter extends AbstractAdapter
      */
     public function copy($path, $newpath)
     {
-        return (bool) $this->normalizeResponse(
-            Cosapi::copyFile($this->getBucket(), $path, $newpath, 1)
+        return (bool)$this->normalizeResponse(
+            $this->cosApi->copyFile($this->getBucket(), $path, $newpath, true)
         );
     }
 
@@ -196,8 +196,8 @@ class Adapter extends AbstractAdapter
      */
     public function delete($path)
     {
-        return (bool) $this->normalizeResponse(
-            Cosapi::delFile($this->getBucket(), $path)
+        return (bool)$this->normalizeResponse(
+            $this->cosApi->delFile($this->getBucket(), $path)
         );
     }
 
@@ -208,8 +208,8 @@ class Adapter extends AbstractAdapter
      */
     public function deleteDir($dirname)
     {
-        return (bool) $this->normalizeResponse(
-            Cosapi::delFolder($this->getBucket(), $dirname)
+        return (bool)$this->normalizeResponse(
+            $this->cosApi->delFolder($this->getBucket(), $dirname)
         );
     }
 
@@ -222,7 +222,7 @@ class Adapter extends AbstractAdapter
     public function createDir($dirname, Config $config)
     {
         return $this->normalizeResponse(
-            Cosapi::createFolder($this->getBucket(), $dirname)
+            $this->cosApi->createFolder($this->getBucket(), $dirname)
         );
     }
 
@@ -237,8 +237,8 @@ class Adapter extends AbstractAdapter
         $visibility = ($visibility === AdapterInterface::VISIBILITY_PUBLIC)
             ? 'eWPrivateRPublic' : 'eWRPrivate';
 
-        return (bool) $this->normalizeResponse(
-            Cosapi::update($this->getBucket(), $path, null, $visibility)
+        return (bool)$this->normalizeResponse(
+            $this->cosApi->update($this->getBucket(), $path, null, $visibility)
         );
     }
 
@@ -250,7 +250,7 @@ class Adapter extends AbstractAdapter
     public function has($path)
     {
         try {
-            return (bool) $this->getMetadata($path);
+            return (bool)$this->getMetadata($path);
         } catch (RuntimeException $exception) {
             return false;
         }
@@ -289,7 +289,7 @@ class Adapter extends AbstractAdapter
     public function listContents($directory = '', $recursive = false)
     {
         return $this->normalizeResponse(
-            Cosapi::listFolder($this->getBucket(), $directory)
+            $this->cosApi->listFolder($this->getBucket(), $directory)
         );
     }
 
@@ -301,7 +301,7 @@ class Adapter extends AbstractAdapter
     public function getMetadata($path)
     {
         return $this->normalizeResponse(
-            Cosapi::stat($this->getBucket(), $path)
+            $this->cosApi->stat($this->getBucket(), $path)
         );
     }
 
@@ -396,7 +396,7 @@ class Adapter extends AbstractAdapter
      */
     protected function getTemporaryPath()
     {
-        return tempnam(sys_get_temp_dir(), uniqid('entwechat', true));
+        return tempnam(sys_get_temp_dir(), uniqid('tencentyun', true));
     }
 
     /**
@@ -412,7 +412,7 @@ class Adapter extends AbstractAdapter
         ];
 
         return $this->normalizeResponse(
-            Cosapi::update($this->getBucket(), $path, null, null, $custom_headers)
+            $this->cosApi->update($this->getBucket(), $path, null, null, $custom_headers)
         );
     }
 

@@ -8,6 +8,7 @@ use Freyo\Flysystem\QcloudCOSv4\Plugins\PutRemoteFileAs;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 use Laravel\Lumen\Application as LumenApplication;
 use League\Flysystem\Filesystem;
+use QCloud\Cos\Api;
 
 /**
  * Class ServiceProvider.
@@ -27,7 +28,8 @@ class ServiceProvider extends LaravelServiceProvider
 
         $this->app->make('filesystem')
                   ->extend('cosv4', function ($app, $config) {
-                      $flysystem = new Filesystem(new Adapter($config));
+                      $cosApi    = new Api($config);
+                      $flysystem = new Filesystem(new Adapter($cosApi, $config));
 
                       $flysystem->addPlugin(new PutRemoteFile());
                       $flysystem->addPlugin(new PutRemoteFileAs());
@@ -45,7 +47,7 @@ class ServiceProvider extends LaravelServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/filesystems.php', 'filesystems'
+            __DIR__ . '/filesystems.php', 'filesystems'
         );
     }
 }
