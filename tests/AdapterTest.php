@@ -5,6 +5,7 @@ namespace Freyo\Flysystem\QcloudCOSv4\Tests;
 use Freyo\Flysystem\QcloudCOSv4\Adapter;
 use League\Flysystem\Config;
 use PHPUnit\Framework\TestCase;
+use QCloud\Cos\Api;
 
 class AdapterTest extends TestCase
 {
@@ -22,7 +23,9 @@ class AdapterTest extends TestCase
             'debug'      => true,
         ];
 
-        $adapter = new Adapter($config);
+        $cosApi = new Api($config);
+
+        $adapter = new Adapter($cosApi, $config);
 
         return [
             [$adapter, $config],
