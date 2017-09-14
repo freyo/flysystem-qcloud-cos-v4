@@ -15,17 +15,17 @@ use QCloud\Cos\Api;
 class Adapter extends AbstractAdapter
 {
     /**
-     * @var Api
+     * @var Api $cosApi
      */
     protected $cosApi;
 
     /**
-     * @var
+     * @var string $bucket
      */
     protected $bucket;
 
     /**
-     * @var
+     * @var bool $debug
      */
     protected $debug;
 
