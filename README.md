@@ -7,6 +7,8 @@
 [![Packagist Version](https://img.shields.io/packagist/v/freyo/flysystem-qcloud-cos-v4.svg?style=flat-square)](https://packagist.org/packages/freyo/flysystem-qcloud-cos-v4)
 [![Total Downloads](https://img.shields.io/packagist/dt/freyo/flysystem-qcloud-cos-v4.svg?style=flat-square)](https://packagist.org/packages/freyo/flysystem-qcloud-cos-v4)
 
+<image src="https://mc.qcloudimg.com/static/img/e9ea555bef030eb7b380e9a3a1e59323/COS.svg" width="220" height="220">
+
 This is a Flysystem adapter for the qcloud-cos-sdk-php v4.
 
 腾讯云COS对象存储 V4
