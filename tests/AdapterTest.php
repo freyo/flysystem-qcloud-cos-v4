@@ -2,6 +2,7 @@
 
 namespace Freyo\Flysystem\QcloudCOSv4\Tests;
 
+use Carbon\Carbon;
 use Freyo\Flysystem\QcloudCOSv4\Adapter;
 use League\Flysystem\Config;
 use PHPUnit\Framework\TestCase;
@@ -168,6 +169,17 @@ class AdapterTest extends TestCase
         $this->assertSame(
             $config['protocol'].'://'.$config['domain'].'/foo/bar.md',
             $adapter->getUrl('foo/bar.md')
+        );
+    }
+
+    /**
+     * @dataProvider Provider
+     */
+    public function testGetTemporaryUrl($adapter, $config)
+    {
+        $this->assertStringStartsWith(
+            "http://{$config['bucket']}-{$config['app_id']}.file.myqcloud.com/foo/bar.md?sign=",
+            $adapter->getTemporaryUrl('foo/bar.md', Carbon::now()->addMinutes(5))
         );
     }
 

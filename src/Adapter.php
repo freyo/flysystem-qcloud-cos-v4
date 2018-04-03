@@ -2,6 +2,8 @@
 
 namespace Freyo\Flysystem\QcloudCOSv4;
 
+use Carbon\Carbon;
+use DateTimeInterface;
 use Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException;
 use League\Flysystem\Adapter\AbstractAdapter;
 use League\Flysystem\AdapterInterface;
@@ -61,6 +63,24 @@ class Adapter extends AbstractAdapter
     public function getUrl($path)
     {
         return $this->applyPathPrefix($path);
+    }
+
+    /**
+     * @param  string             $path
+     * @param  \DateTimeInterface $expiration
+     * @param  array              $options
+     *
+     * @return string|bool
+     */
+    public function getTemporaryUrl($path, DateTimeInterface $expiration, array $options = [])
+    {
+        $response = $this->cosApi->getDownloadUrl(
+            $this->getBucket(), $path, Carbon::now()->diffInSeconds($expiration)
+        );
+
+        $response = $this->normalizeResponse($response);
+
+        return isset($response['access_url']) ? $response['access_url'] : false;
     }
 
     /**
