@@ -66,9 +66,9 @@ class Adapter extends AbstractAdapter
     }
 
     /**
-     * @param  string             $path
-     * @param  \DateTimeInterface $expiration
-     * @param  array              $options
+     * @param string             $path
+     * @param \DateTimeInterface $expiration
+     * @param array              $options
      *
      * @return string|bool
      */
