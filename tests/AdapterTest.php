@@ -174,7 +174,7 @@ class AdapterTest extends TestCase
     public function testGetTemporaryUrl($adapter, $config, $options)
     {
         $this->assertStringStartsWith(
-            "http://{$config['bucket']}-{$config['app_id']}.file.myqcloud.com/foo/'.$options['machineId'].'/bar.md?sign=",
+            "http://{$config['bucket']}-{$config['app_id']}.file.myqcloud.com/foo/{$options['machineId']}/bar.md?sign=",
             $adapter->getTemporaryUrl('foo/bar.md', Carbon::now()->addMinutes(5))
         );
     }
