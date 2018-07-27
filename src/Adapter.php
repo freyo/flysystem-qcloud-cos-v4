@@ -79,9 +79,10 @@ class Adapter extends AbstractAdapter
         );
 
         $response = $this->normalizeResponse($response);
-        
+
         if (false !== $response) {
             $url = parse_url($response['access_url']);
+
             return $this->getUrl($url['path']).'?'.$url['query'];
         }
 
