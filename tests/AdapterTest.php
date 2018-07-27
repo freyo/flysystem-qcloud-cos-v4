@@ -157,7 +157,8 @@ class AdapterTest extends TestCase
      */
     public function testDelete($adapter, $config, $options)
     {
-        $this->assertTrue($adapter->delete('foo/'.$options['machineId'].'/rename.md'));
+        $this->assertTrue((bool)$adapter->write('foo/'.$options['machineId'].'/delete.md', 'content', new Config(['insertOnly' => 0])));
+        $this->assertTrue($adapter->delete('foo/'.$options['machineId'].'/delete.md'));
     }
     
     /**
@@ -175,14 +176,6 @@ class AdapterTest extends TestCase
     public function testCreateDir($adapter, $config, $options)
     {
         $this->assertTrue((bool) $adapter->createDir('bar', new Config()));
-    }
-    
-    /**
-     * @dataProvider Provider
-     */
-    public function testCreateDirFailed($adapter, $config, $options)
-    {
-        $this->assertFalse((bool) $adapter->createDir('bar', new Config()));
     }
 
     /**
@@ -217,14 +210,6 @@ class AdapterTest extends TestCase
     public function testHas($adapter, $config, $options)
     {
         $this->assertTrue($adapter->has('foo/'.$options['machineId'].'/bar.md'));
-    }
-    
-    /**
-     * @dataProvider Provider
-     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
-     */
-    public function testHasFailed($adapter, $config, $options)
-    {
         $this->assertFalse($adapter->has('foo/'.$options['machineId'].'/noexist.md'));
     }
 
