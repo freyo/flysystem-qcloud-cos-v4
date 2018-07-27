@@ -33,7 +33,7 @@ class AdapterTest extends TestCase
         ];
 
         return [
-            [$adapter, $config],
+            [$adapter, $config, $options],
         ];
     }
 
