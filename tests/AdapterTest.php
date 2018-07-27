@@ -27,6 +27,10 @@ class AdapterTest extends TestCase
         $cosApi = new Api($config);
 
         $adapter = new Adapter($cosApi, $config);
+        
+        $options = [
+            'machineId' => 'COSV4_'.PHP_OS.PHP_VERSION,
+        ];
 
         return [
             [$adapter, $config],
@@ -36,84 +40,84 @@ class AdapterTest extends TestCase
     /**
      * @dataProvider Provider
      */
-    public function testWrite($adapter)
+    public function testWrite($adapter, $config, $options)
     {
-        $this->assertTrue((bool)$adapter->write('foo/foo.md', 'content', new Config(['insertOnly' => 0])));
-        $this->assertFalse((bool)$adapter->write('foo/foo.md', uniqid(), new Config(['insertOnly' => 1])));
+        $this->assertTrue((bool)$adapter->write('foo/'.$options['machineId'].'/foo.md', 'content', new Config(['insertOnly' => 0])));
+        $this->assertFalse((bool)$adapter->write('foo/'.$options['machineId'].'/foo.md', uniqid(), new Config(['insertOnly' => 1])));
     }
 
     /**
      * @dataProvider Provider
      */
-    public function testWriteStream($adapter)
+    public function testWriteStream($adapter, $config, $options)
     {
         $temp = tmpfile();
         fwrite($temp, "writing to tempfile");
-        $this->assertTrue((bool)$adapter->writeStream('foo/bar.md', $temp, new Config(['insertOnly' => 0])));
+        $this->assertTrue((bool)$adapter->writeStream('foo/'.$options['machineId'].'/bar.md', $temp, new Config(['insertOnly' => 0])));
         fclose($temp);
 
         $temp = tmpfile();
         fwrite($temp, uniqid());
-        $this->assertFalse((bool) $adapter->writeStream('foo/bar.md', $temp, new Config(['insertOnly' => 1])));
+        $this->assertFalse((bool) $adapter->writeStream('foo/'.$options['machineId'].'/bar.md', $temp, new Config(['insertOnly' => 1])));
         fclose($temp);
     }
 
     /**
      * @dataProvider Provider
      */
-    public function testUpdate($adapter)
+    public function testUpdate($adapter, $config, $options)
     {
-        $this->assertTrue((bool)$adapter->update('foo/bar.md', uniqid(), new Config(['insertOnly' => 0])));
-        $this->assertFalse((bool)$adapter->update('foo/bar.md', uniqid(), new Config(['insertOnly' => 1])));
+        $this->assertTrue((bool)$adapter->update('foo/'.$options['machineId'].'/bar.md', uniqid(), new Config(['insertOnly' => 0])));
+        $this->assertFalse((bool)$adapter->update('foo/'.$options['machineId'].'/bar.md', uniqid(), new Config(['insertOnly' => 1])));
     }
 
     /**
      * @dataProvider Provider
      */
-    public function testUpdateStream($adapter)
+    public function testUpdateStream($adapter, $config, $options)
     {
         $temp = tmpfile();
         fwrite($temp, 'writing to tempfile');
-        $this->assertTrue((bool) $adapter->updateStream('foo/bar.md', $temp, new Config(['insertOnly' => 0])));
+        $this->assertTrue((bool) $adapter->updateStream('foo/'.$options['machineId'].'/bar.md', $temp, new Config(['insertOnly' => 0])));
         fclose($temp);
 
         $temp = tmpfile();
         fwrite($temp, uniqid());
-        $this->assertFalse((bool) $adapter->updateStream('foo/bar.md', $temp, new Config(['insertOnly' => 1])));
+        $this->assertFalse((bool) $adapter->updateStream('foo/'.$options['machineId'].'/bar.md', $temp, new Config(['insertOnly' => 1])));
         fclose($temp);
     }
 
     /**
      * @dataProvider Provider
      */
-    public function testRename($adapter)
+    public function testRename($adapter, $config, $options)
     {
-        $this->assertTrue($adapter->rename('foo/foo.md', 'foo/rename.md'));
-        $this->assertFalse($adapter->rename('foo/notexist.md', 'foo/notexist.md'));
+        $this->assertTrue($adapter->rename('foo/'.$options['machineId'].'/foo.md', 'foo/rename.md'));
+        $this->assertFalse($adapter->rename('foo/'.$options['machineId'].'/notexist.md', 'foo/notexist.md'));
     }
 
     /**
      * @dataProvider Provider
      */
-    public function testCopy($adapter)
+    public function testCopy($adapter, $config, $options)
     {
-        $this->assertTrue($adapter->copy('foo/bar.md', 'foo/copy.md'));
-        $this->assertFalse($adapter->copy('foo/notexist.md', 'foo/notexist.md'));
+        $this->assertTrue($adapter->copy('foo/'.$options['machineId'].'/bar.md', 'foo/copy.md'));
+        $this->assertFalse($adapter->copy('foo/'.$options['machineId'].'/notexist.md', 'foo/notexist.md'));
     }
 
     /**
      * @dataProvider Provider
      */
-    public function testDelete($adapter)
+    public function testDelete($adapter, $config, $options)
     {
-        $this->assertTrue($adapter->delete('foo/rename.md'));
-        $this->assertFalse($adapter->delete('foo/notexist.md'));
+        $this->assertTrue($adapter->delete('foo/'.$options['machineId'].'/rename.md'));
+        $this->assertFalse($adapter->delete('foo/'.$options['machineId'].'/notexist.md'));
     }
 
     /**
      * @dataProvider Provider
      */
-    public function testCreateDir($adapter)
+    public function testCreateDir($adapter, $config, $options)
     {
         $this->assertTrue((bool) $adapter->createDir('bar', new Config()));
         $this->assertFalse((bool) $adapter->createDir('bar', new Config()));
@@ -122,7 +126,7 @@ class AdapterTest extends TestCase
     /**
      * @dataProvider Provider
      */
-    public function testDeleteDir($adapter)
+    public function testDeleteDir($adapter, $config, $options)
     {
         $this->assertTrue($adapter->deleteDir('bar'));
         $this->assertFalse($adapter->deleteDir('notexist'));
@@ -131,24 +135,24 @@ class AdapterTest extends TestCase
     /**
      * @dataProvider Provider
      */
-    public function testSetVisibility($adapter)
+    public function testSetVisibility($adapter, $config, $options)
     {
-        $this->assertTrue($adapter->setVisibility('foo/copy.md', 'private'));
+        $this->assertTrue($adapter->setVisibility('foo/'.$options['machineId'].'/copy.md', 'private'));
     }
 
     /**
      * @dataProvider Provider
      */
-    public function testHas($adapter)
+    public function testHas($adapter, $config, $options)
     {
-        $this->assertTrue($adapter->has('foo/bar.md'));
-        $this->assertFalse($adapter->has('foo/noexist.md'));
+        $this->assertTrue($adapter->has('foo/'.$options['machineId'].'/bar.md'));
+        $this->assertFalse($adapter->has('foo/'.$options['machineId'].'/noexist.md'));
     }
 
     /**
      * @dataProvider Provider
      */
-    public function testRead($adapter)
+    public function testRead($adapter, $config, $options)
     {
         $this->assertArrayHasKey('contents', $adapter->read('foo/bar.md'));
     }
@@ -156,10 +160,10 @@ class AdapterTest extends TestCase
     /**
      * @dataProvider Provider
      */
-    public function testGetUrl($adapter, $config)
+    public function testGetUrl($adapter, $config, $options)
     {
         $this->assertSame(
-            $config['protocol'].'://'.$config['domain'].'/foo/bar.md',
+            $config['protocol'].'://'.$config['domain'].'/foo/'.$options['machineId'].'/bar.md',
             $adapter->getUrl('foo/bar.md')
         );
     }
@@ -167,10 +171,10 @@ class AdapterTest extends TestCase
     /**
      * @dataProvider Provider
      */
-    public function testGetTemporaryUrl($adapter, $config)
+    public function testGetTemporaryUrl($adapter, $config, $options)
     {
         $this->assertStringStartsWith(
-            "http://{$config['bucket']}-{$config['app_id']}.file.myqcloud.com/foo/bar.md?sign=",
+            "http://{$config['bucket']}-{$config['app_id']}.file.myqcloud.com/foo/'.$options['machineId'].'/bar.md?sign=",
             $adapter->getTemporaryUrl('foo/bar.md', Carbon::now()->addMinutes(5))
         );
     }
@@ -178,18 +182,18 @@ class AdapterTest extends TestCase
     /**
      * @dataProvider Provider
      */
-    public function testReadStream($adapter)
+    public function testReadStream($adapter, $config, $options)
     {
         $this->assertSame(
-            stream_get_contents(fopen($adapter->getUrl('foo/bar.md'), 'r')),
-            stream_get_contents($adapter->readStream('foo/bar.md')['stream'])
+            stream_get_contents(fopen($adapter->getUrl('foo/'.$options['machineId'].'/bar.md'), 'r')),
+            stream_get_contents($adapter->readStream('foo/'.$options['machineId'].'/bar.md')['stream'])
         );
     }
 
     /**
      * @dataProvider Provider
      */
-    public function testListContents($adapter)
+    public function testListContents($adapter, $config, $options)
     {
         $this->assertArrayHasKey('infos', $adapter->listContents('foo'));
     }
@@ -197,40 +201,40 @@ class AdapterTest extends TestCase
     /**
      * @dataProvider Provider
      */
-    public function testGetMetadata($adapter)
+    public function testGetMetadata($adapter, $config, $options)
     {
-        $this->assertArrayHasKey('access_url', $adapter->getMetadata('foo/bar.md'));
+        $this->assertArrayHasKey('access_url', $adapter->getMetadata('foo/'.$options['machineId'].'/bar.md'));
     }
 
     /**
      * @dataProvider Provider
      */
-    public function testGetSize($adapter)
+    public function testGetSize($adapter, $config, $options)
     {
-        $this->assertArrayHasKey('size', $adapter->getSize('foo/bar.md'));
+        $this->assertArrayHasKey('size', $adapter->getSize('foo/'.$options['machineId'].'/bar.md'));
     }
 
     /**
      * @dataProvider Provider
      */
-    public function testGetMimetype($adapter)
+    public function testGetMimetype($adapter, $config, $options)
     {
-        $this->assertNotSame(['mimetype' => ''], $adapter->getMimetype('foo/bar.md'));
+        $this->assertNotSame(['mimetype' => ''], $adapter->getMimetype('foo/'.$options['machineId'].'/bar.md'));
     }
 
     /**
      * @dataProvider Provider
      */
-    public function testGetTimestamp($adapter)
+    public function testGetTimestamp($adapter, $config, $options)
     {
-        $this->assertNotSame(['timestamp' => 0], $adapter->getTimestamp('foo/bar.md'));
+        $this->assertNotSame(['timestamp' => 0], $adapter->getTimestamp('foo/'.$options['machineId'].'/bar.md'));
     }
 
     /**
      * @dataProvider Provider
      */
-    public function testGetVisibility($adapter)
+    public function testGetVisibility($adapter, $config, $options)
     {
-        $this->assertSame(['visibility' => 'private'], $adapter->getVisibility('foo/copy.md'));
+        $this->assertSame(['visibility' => 'private'], $adapter->getVisibility('foo/'.$options['machineId'].'/copy.md'));
     }
 }
