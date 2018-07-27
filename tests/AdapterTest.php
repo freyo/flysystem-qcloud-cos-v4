@@ -183,6 +183,7 @@ class AdapterTest extends TestCase
      */
     public function testDeleteDir($adapter, $config, $options)
     {
+        $this->assertTrue((bool) $adapter->createDir('bar', new Config()));
         $this->assertTrue($adapter->deleteDir('bar'));
     }
     
@@ -303,7 +304,7 @@ class AdapterTest extends TestCase
     {
         $this->assertTrue((bool)$adapter->write('foo/'.$options['machineId'].'/visibility.md', 'content', new Config(['insertOnly' => 0])));
         $this->assertTrue($adapter->setVisibility('foo/'.$options['machineId'].'/visibility.md', 'private'));
-        $this->assertArrayHasKey('visibility', $adapter->getTimestamp('foo/'.$options['machineId'].'/visibility.md'));
+        $this->assertArrayHasKey('visibility', $adapter->getVisibility('foo/'.$options['machineId'].'/visibility.md'));
         $this->assertSame(['visibility' => 'private'], $adapter->getVisibility('foo/'.$options['machineId'].'/visibility.md'));
     }
 }
