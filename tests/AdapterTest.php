@@ -283,6 +283,7 @@ class AdapterTest extends TestCase
      */
     public function testGetMimetype($adapter, $config, $options)
     {
+        $this->assertArrayHasKey('mimetype', $adapter->getMimetype('foo/'.$options['machineId'].'/bar.md'));
         $this->assertNotSame(['mimetype' => ''], $adapter->getMimetype('foo/'.$options['machineId'].'/bar.md'));
     }
 
@@ -291,6 +292,7 @@ class AdapterTest extends TestCase
      */
     public function testGetTimestamp($adapter, $config, $options)
     {
+        $this->assertArrayHasKey('timestamp', $adapter->getTimestamp('foo/'.$options['machineId'].'/bar.md'));
         $this->assertNotSame(['timestamp' => 0], $adapter->getTimestamp('foo/'.$options['machineId'].'/bar.md'));
     }
 
@@ -299,7 +301,9 @@ class AdapterTest extends TestCase
      */
     public function testGetVisibility($adapter, $config, $options)
     {
-        $this->assertTrue((bool)$adapter->write('foo/'.$options['machineId'].'/copy.md', 'content', new Config(['insertOnly' => 0])));
-        $this->assertSame(['visibility' => 'public'], $adapter->getVisibility('foo/'.$options['machineId'].'/copy.md'));
+        $this->assertTrue((bool)$adapter->write('foo/'.$options['machineId'].'/visibility.md', 'content', new Config(['insertOnly' => 0])));
+        $this->assertTrue($adapter->setVisibility('foo/'.$options['machineId'].'/visibility.md', 'private'));
+        $this->assertArrayHasKey('visibility', $adapter->getTimestamp('foo/'.$options['machineId'].'/visibility.md'));
+        $this->assertSame(['visibility' => 'private'], $adapter->getVisibility('foo/'.$options['machineId'].'/visibility.md'));
     }
 }
