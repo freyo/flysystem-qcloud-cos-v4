@@ -43,9 +43,17 @@ class AdapterTest extends TestCase
     public function testWrite($adapter, $config, $options)
     {
         $this->assertTrue((bool)$adapter->write('foo/'.$options['machineId'].'/foo.md', 'content', new Config(['insertOnly' => 0])));
-        $this->assertFalse((bool)$adapter->write('foo/'.$options['machineId'].'/foo.md', uniqid(), new Config(['insertOnly' => 1])));
     }
 
+    /**
+     * @dataProvider Provider
+     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
+     */
+    public function testWriteInsertOnly($adapter, $config, $options)
+    {
+        $this->assertFalse((bool)$adapter->write('foo/'.$options['machineId'].'/foo.md', uniqid(), new Config(['insertOnly' => 1])));
+    }
+    
     /**
      * @dataProvider Provider
      */
@@ -55,7 +63,14 @@ class AdapterTest extends TestCase
         fwrite($temp, "writing to tempfile");
         $this->assertTrue((bool)$adapter->writeStream('foo/'.$options['machineId'].'/bar.md', $temp, new Config(['insertOnly' => 0])));
         fclose($temp);
-
+    }
+    
+    /**
+     * @dataProvider Provider
+     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
+     */
+    public function testWriteStreamInsertOnly($adapter, $config, $options)
+    {
         $temp = tmpfile();
         fwrite($temp, uniqid());
         $this->assertFalse((bool) $adapter->writeStream('foo/'.$options['machineId'].'/bar.md', $temp, new Config(['insertOnly' => 1])));
@@ -68,6 +83,14 @@ class AdapterTest extends TestCase
     public function testUpdate($adapter, $config, $options)
     {
         $this->assertTrue((bool)$adapter->update('foo/'.$options['machineId'].'/bar.md', uniqid(), new Config(['insertOnly' => 0])));
+    }
+    
+    /**
+     * @dataProvider Provider
+     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
+     */
+    public function testUpdateInsertOnly($adapter, $config, $options)
+    {
         $this->assertFalse((bool)$adapter->update('foo/'.$options['machineId'].'/bar.md', uniqid(), new Config(['insertOnly' => 1])));
     }
 
@@ -80,7 +103,14 @@ class AdapterTest extends TestCase
         fwrite($temp, 'writing to tempfile');
         $this->assertTrue((bool) $adapter->updateStream('foo/'.$options['machineId'].'/bar.md', $temp, new Config(['insertOnly' => 0])));
         fclose($temp);
-
+    }
+    
+    /**
+     * @dataProvider Provider
+     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
+     */
+    public function testUpdateStreamInsertOnly($adapter, $config, $options)
+    {
         $temp = tmpfile();
         fwrite($temp, uniqid());
         $this->assertFalse((bool) $adapter->updateStream('foo/'.$options['machineId'].'/bar.md', $temp, new Config(['insertOnly' => 1])));
@@ -93,6 +123,14 @@ class AdapterTest extends TestCase
     public function testRename($adapter, $config, $options)
     {
         $this->assertTrue($adapter->rename('foo/'.$options['machineId'].'/foo.md', 'foo/rename.md'));
+    }
+    
+    /**
+     * @dataProvider Provider
+     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
+     */
+    public function testRenameFailed($adapter, $config, $options)
+    {
         $this->assertFalse($adapter->rename('foo/'.$options['machineId'].'/notexist.md', 'foo/notexist.md'));
     }
 
@@ -102,6 +140,14 @@ class AdapterTest extends TestCase
     public function testCopy($adapter, $config, $options)
     {
         $this->assertTrue($adapter->copy('foo/'.$options['machineId'].'/bar.md', 'foo/copy.md'));
+    }
+    
+    /**
+     * @dataProvider Provider
+     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
+     */
+    public function testCopyFailed($adapter, $config, $options)
+    {
         $this->assertFalse($adapter->copy('foo/'.$options['machineId'].'/notexist.md', 'foo/notexist.md'));
     }
 
@@ -111,6 +157,14 @@ class AdapterTest extends TestCase
     public function testDelete($adapter, $config, $options)
     {
         $this->assertTrue($adapter->delete('foo/'.$options['machineId'].'/rename.md'));
+    }
+    
+    /**
+     * @dataProvider Provider
+     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
+     */
+    public function testDeleteFailed($adapter, $config, $options)
+    {
         $this->assertFalse($adapter->delete('foo/'.$options['machineId'].'/notexist.md'));
     }
 
@@ -120,6 +174,14 @@ class AdapterTest extends TestCase
     public function testCreateDir($adapter, $config, $options)
     {
         $this->assertTrue((bool) $adapter->createDir('bar', new Config()));
+    }
+    
+    /**
+     * @dataProvider Provider
+     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
+     */
+    public function testCreateDirFailed($adapter, $config, $options)
+    {
         $this->assertFalse((bool) $adapter->createDir('bar', new Config()));
     }
 
@@ -129,6 +191,14 @@ class AdapterTest extends TestCase
     public function testDeleteDir($adapter, $config, $options)
     {
         $this->assertTrue($adapter->deleteDir('bar'));
+    }
+    
+    /**
+     * @dataProvider Provider
+     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
+     */
+    public function testDeleteDirFailed($adapter, $config, $options)
+    {
         $this->assertFalse($adapter->deleteDir('notexist'));
     }
 
@@ -146,6 +216,14 @@ class AdapterTest extends TestCase
     public function testHas($adapter, $config, $options)
     {
         $this->assertTrue($adapter->has('foo/'.$options['machineId'].'/bar.md'));
+    }
+    
+    /**
+     * @dataProvider Provider
+     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
+     */
+    public function testHasFailed($adapter, $config, $options)
+    {
         $this->assertFalse($adapter->has('foo/'.$options['machineId'].'/noexist.md'));
     }
 
