@@ -27,7 +27,7 @@ class AdapterTest extends TestCase
         $cosApi = new Api($config);
 
         $adapter = new Adapter($cosApi, $config);
-        
+
         $options = [
             'machineId' => 'COSV4_'.PHP_OS.PHP_VERSION,
         ];
@@ -42,7 +42,7 @@ class AdapterTest extends TestCase
      */
     public function testWrite($adapter, $config, $options)
     {
-        $this->assertTrue((bool)$adapter->write('foo/'.$options['machineId'].'/foo.md', 'content', new Config(['insertOnly' => 0])));
+        $this->assertTrue((bool) $adapter->write('foo/'.$options['machineId'].'/foo.md', 'content', new Config(['insertOnly' => 0])));
     }
 
     /**
@@ -51,20 +51,20 @@ class AdapterTest extends TestCase
      */
     public function testWriteInsertOnly($adapter, $config, $options)
     {
-        $this->assertFalse((bool)$adapter->write('foo/'.$options['machineId'].'/foo.md', uniqid(), new Config(['insertOnly' => 1])));
+        $this->assertFalse((bool) $adapter->write('foo/'.$options['machineId'].'/foo.md', uniqid(), new Config(['insertOnly' => 1])));
     }
-    
+
     /**
      * @dataProvider Provider
      */
     public function testWriteStream($adapter, $config, $options)
     {
         $temp = tmpfile();
-        fwrite($temp, "writing to tempfile");
-        $this->assertTrue((bool)$adapter->writeStream('foo/'.$options['machineId'].'/bar.md', $temp, new Config(['insertOnly' => 0])));
+        fwrite($temp, 'writing to tempfile');
+        $this->assertTrue((bool) $adapter->writeStream('foo/'.$options['machineId'].'/bar.md', $temp, new Config(['insertOnly' => 0])));
         fclose($temp);
     }
-    
+
     /**
      * @dataProvider Provider
      * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
@@ -82,16 +82,16 @@ class AdapterTest extends TestCase
      */
     public function testUpdate($adapter, $config, $options)
     {
-        $this->assertTrue((bool)$adapter->update('foo/'.$options['machineId'].'/bar.md', uniqid(), new Config(['insertOnly' => 0])));
+        $this->assertTrue((bool) $adapter->update('foo/'.$options['machineId'].'/bar.md', uniqid(), new Config(['insertOnly' => 0])));
     }
-    
+
     /**
      * @dataProvider Provider
      * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
      */
     public function testUpdateInsertOnly($adapter, $config, $options)
     {
-        $this->assertFalse((bool)$adapter->update('foo/'.$options['machineId'].'/bar.md', uniqid(), new Config(['insertOnly' => 1])));
+        $this->assertFalse((bool) $adapter->update('foo/'.$options['machineId'].'/bar.md', uniqid(), new Config(['insertOnly' => 1])));
     }
 
     /**
@@ -104,7 +104,7 @@ class AdapterTest extends TestCase
         $this->assertTrue((bool) $adapter->updateStream('foo/'.$options['machineId'].'/bar.md', $temp, new Config(['insertOnly' => 0])));
         fclose($temp);
     }
-    
+
     /**
      * @dataProvider Provider
      * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
@@ -122,10 +122,10 @@ class AdapterTest extends TestCase
      */
     public function testRename($adapter, $config, $options)
     {
-        $this->assertTrue((bool)$adapter->write('foo/'.$options['machineId'].'/foo2.md', 'content', new Config(['insertOnly' => 0])));
+        $this->assertTrue((bool) $adapter->write('foo/'.$options['machineId'].'/foo2.md', 'content', new Config(['insertOnly' => 0])));
         $this->assertTrue($adapter->rename('foo/'.$options['machineId'].'/foo2.md', 'foo/rename.md'));
     }
-    
+
     /**
      * @dataProvider Provider
      * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
@@ -142,7 +142,7 @@ class AdapterTest extends TestCase
     {
         $this->assertTrue($adapter->copy('foo/'.$options['machineId'].'/bar.md', 'foo/copy.md'));
     }
-    
+
     /**
      * @dataProvider Provider
      * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
@@ -157,10 +157,10 @@ class AdapterTest extends TestCase
      */
     public function testDelete($adapter, $config, $options)
     {
-        $this->assertTrue((bool)$adapter->write('foo/'.$options['machineId'].'/delete.md', 'content', new Config(['insertOnly' => 0])));
+        $this->assertTrue((bool) $adapter->write('foo/'.$options['machineId'].'/delete.md', 'content', new Config(['insertOnly' => 0])));
         $this->assertTrue($adapter->delete('foo/'.$options['machineId'].'/delete.md'));
     }
-    
+
     /**
      * @dataProvider Provider
      * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
@@ -186,7 +186,7 @@ class AdapterTest extends TestCase
         $this->assertTrue((bool) $adapter->createDir('bar', new Config()));
         $this->assertTrue($adapter->deleteDir('bar'));
     }
-    
+
     /**
      * @dataProvider Provider
      * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
@@ -201,7 +201,7 @@ class AdapterTest extends TestCase
      */
     public function testSetVisibility($adapter, $config, $options)
     {
-        $this->assertTrue((bool)$adapter->write('foo/'.$options['machineId'].'/copy2.md', 'content', new Config(['insertOnly' => 0])));
+        $this->assertTrue((bool) $adapter->write('foo/'.$options['machineId'].'/copy2.md', 'content', new Config(['insertOnly' => 0])));
         $this->assertTrue($adapter->setVisibility('foo/'.$options['machineId'].'/copy2.md', 'private'));
     }
 
@@ -302,7 +302,7 @@ class AdapterTest extends TestCase
      */
     public function testGetVisibility($adapter, $config, $options)
     {
-        $this->assertTrue((bool)$adapter->write('foo/'.$options['machineId'].'/visibility.md', 'content', new Config(['insertOnly' => 0])));
+        $this->assertTrue((bool) $adapter->write('foo/'.$options['machineId'].'/visibility.md', 'content', new Config(['insertOnly' => 0])));
         $this->assertTrue($adapter->setVisibility('foo/'.$options['machineId'].'/visibility.md', 'private'));
         $this->assertArrayHasKey('visibility', $adapter->getVisibility('foo/'.$options['machineId'].'/visibility.md'));
         $this->assertSame(['visibility' => 'private'], $adapter->getVisibility('foo/'.$options['machineId'].'/visibility.md'));
