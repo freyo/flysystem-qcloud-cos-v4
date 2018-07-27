@@ -122,7 +122,8 @@ class AdapterTest extends TestCase
      */
     public function testRename($adapter, $config, $options)
     {
-        $this->assertTrue($adapter->rename('foo/'.$options['machineId'].'/foo.md', 'foo/rename.md'));
+        $this->assertTrue((bool)$adapter->write('foo/'.$options['machineId'].'/foo2.md', 'content', new Config(['insertOnly' => 0])));
+        $this->assertTrue($adapter->rename('foo/'.$options['machineId'].'/foo2.md', 'foo/rename.md'));
     }
     
     /**
@@ -178,7 +179,6 @@ class AdapterTest extends TestCase
     
     /**
      * @dataProvider Provider
-     * @expectedException \Freyo\Flysystem\QcloudCOSv4\Exceptions\RuntimeException
      */
     public function testCreateDirFailed($adapter, $config, $options)
     {
@@ -207,7 +207,8 @@ class AdapterTest extends TestCase
      */
     public function testSetVisibility($adapter, $config, $options)
     {
-        $this->assertTrue($adapter->setVisibility('foo/'.$options['machineId'].'/copy.md', 'private'));
+        $this->assertTrue((bool)$adapter->write('foo/'.$options['machineId'].'/copy2.md', 'content', new Config(['insertOnly' => 0])));
+        $this->assertTrue($adapter->setVisibility('foo/'.$options['machineId'].'/copy2.md', 'private'));
     }
 
     /**
@@ -241,7 +242,7 @@ class AdapterTest extends TestCase
     public function testGetUrl($adapter, $config, $options)
     {
         $this->assertSame(
-            $config['protocol'].'://'.$config['domain'].'/foo/'.$options['machineId'].'/bar.md',
+            $config['protocol'].'://'.$config['domain'].'/foo/bar.md',
             $adapter->getUrl('foo/bar.md')
         );
     }
@@ -253,7 +254,7 @@ class AdapterTest extends TestCase
     {
         $this->assertStringStartsWith(
             "http://{$config['bucket']}-{$config['app_id']}.file.myqcloud.com/foo/{$options['machineId']}/bar.md?sign=",
-            $adapter->getTemporaryUrl('foo/bar.md', Carbon::now()->addMinutes(5))
+            $adapter->getTemporaryUrl('foo/'.$options['machineId'].'/bar.md', Carbon::now()->addMinutes(5))
         );
     }
 
@@ -313,6 +314,7 @@ class AdapterTest extends TestCase
      */
     public function testGetVisibility($adapter, $config, $options)
     {
-        $this->assertSame(['visibility' => 'private'], $adapter->getVisibility('foo/'.$options['machineId'].'/copy.md'));
+        $this->assertTrue((bool)$adapter->write('foo/'.$options['machineId'].'/copy.md', 'content', new Config(['insertOnly' => 0])));
+        $this->assertSame(['visibility' => 'public'], $adapter->getVisibility('foo/'.$options['machineId'].'/copy.md'));
     }
 }
